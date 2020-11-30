@@ -1,0 +1,26 @@
+<app-saved-courses [savedCourses]="savedCourses"></app-saved-courses>
+
+<h2>Courses</h2>
+
+<div *ngIf="results">
+    <p>Search By Subject</p>
+    <input [(ngModel)] = "searchBySubject">
+    <br>
+    <p>Search By Class Name</p>
+    <input [(ngModel)] = "searchByClassName">
+
+    <ul class = "courses">
+        <li class="allCourses" *ngFor="let course of filterResultsByClassName(filterResultsBySubject(results))">
+            <span>Subject: {{course.subject}}</span>
+            <br>
+            <span>Class Name: {{course.class_name}}</span>
+            <br>
+            <span>Component: {{course.component}}</span>
+            <br>
+            <button class="saveBtn" (click)="addToSavedCourses(course)">Add to Saved Courses</button>
+        </li>
+    </ul>
+</div>
+<div *ngIf="!results">
+    <p>Loading...</p>
+</div>

@@ -1,0 +1,14 @@
+<div *ngIf ="savedCourses.length > 0">
+    <h2>Saved Courses</h2>  
+        <ul class="saved">
+            <li *ngFor ="let x of savedCourses">
+                <span>Subject: {{x.subject}}</span>
+                <br>
+                <span>Class Name: {{x.class_name}}</span>
+                <br>
+                <span>Component: {{x.component}}</span>
+            </li>
+        </ul>
+        <br>
+        <button (click)="resetList()">Reset Selection</button>
+</div>

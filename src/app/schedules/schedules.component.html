@@ -1,0 +1,53 @@
+<app-saved-courses [savedCourses]="savedCourses"></app-saved-courses>
+
+<h2>Schedules</h2>
+<button (click)="createNewSchedule()">Create New Schedule Named: </button>
+<input [(ngModel)] ="newScheduleName">
+<br>
+<button (click)="deleteSchedule()">Delete a Schedule Named: </button>
+<input [(ngModel)] ="deleteScheduleName">
+<br>
+<button (click)="deleteSchedules()">Delete All Schedules</button>
+
+
+<div *ngIf="timetable">
+    <h3>Timetable for schedule {{timetableSchName}}</h3>
+    <button (click) = "displaySchedules()">Return to Schedules</button>
+    <p>Search by Subject</p>
+    <input [(ngModel)] = "ttSearchSubject">
+    <br>
+    <p>Search by Course Code</p>
+    <input [(ngModel)] = "ttSearchCode">
+    <br>
+    <p>Search by Component</p>
+    <input [(ngModel)] = "ttSearchComp">
+    <ul>
+        <li class="timetable" *ngFor="let t of filterByComp(filterByCode(filterBySubject(timetable)))">
+            <span>Subject = {{t.subject}}</span>
+            <br>
+            <span>Course Code = {{t.course_code}}</span>
+            <br>
+            <span>Component = {{t.component}}</span>
+            <br>
+            <span>Start Time = {{t.start_time}}</span>
+            <br>
+            <span>End Time = {{t.end_time}}</span>
+            <br>
+            <span>Days = {{t.days}}</span>
+        </li>
+    </ul>
+</div>
+<div *ngIf="results">
+    <h3>All Schedules</h3>
+    <div *ngIf="results.length ==0">
+        <p>There are no schedules made</p>
+    </div>
+    <ul class = "schedules">
+        <li class="allSchedules" *ngFor="let sch of results">
+            <span>Schedule Name: {{sch.schedule_name}} </span>
+            <br>
+            <button class="schBtns" (click)="openTimeTable(sch)">Open Timetable</button>
+            <button class="schBtns" (click)="importCourses(sch)">Import Saved Courses into Schedule</button>
+        </li>
+    </ul>
+</div>
