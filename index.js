@@ -7,7 +7,7 @@ const fileSync = require("lowdb/adapters/FileSync");
 const { join } = require('path');
 
 const db = lowDB(new fileSync("db.json"))
-app.use('/', express.static('dist/se3316-lab4'))
+app.use('/', express.static('dist/se3316-lab5'))
 app.use(bodyParser.json())
 
 //console.log(db.get('courses').find({catalog_nbr:"1021B"}).value())
@@ -21,8 +21,13 @@ app.get('/api/courses', (req, res) => {
     for(let x = 0; x < jason.length; x++){
         const tempJ = {
             "subject": jason[x].subject,
+            "course_code":jason[x].catalog_nbr,
             "class_name": jason[x].className,
-            "component": jason[x].course_info[0].ssr_component
+            "component": jason[x].course_info[0].ssr_component,
+            "class_section" : jason[x].course_info[0].class_section,
+            "start_time": jason[x].course_info[0].start_time,
+            "end_time": jason[x].course_info[0].end_time,
+            "days": jason[x].course_info[0].days
         }
         result.push(tempJ)
     }

@@ -8,14 +8,32 @@
     <br>
     <p>Search By Class Name</p>
     <input [(ngModel)] = "searchByClassName">
+    <br>
+    <p>Search By Class Code</p>
+    <input [(ngModel)] = "searchByClassCode">
+    <br>
+    <p>Search By Component</p>
+    <input [(ngModel)] = "searchByComponent">
+    <br>
+    <button (click)="clearSearches()">Clear Searches</button>
 
     <ul class = "courses">
-        <li class="allCourses" *ngFor="let course of filterResultsByClassName(filterResultsBySubject(results))">
+        <li class="allCourses" *ngFor="let course of filterResultsByClassCode(filterResultsByComponent(filterResultsByClassName(filterResultsBySubject(results))))">
             <span>Subject: {{course.subject}}</span>
+            <br>
+            <span>Course Code: {{course.course_code}}</span>
             <br>
             <span>Class Name: {{course.class_name}}</span>
             <br>
             <span>Component: {{course.component}}</span>
+            <br>
+            <span>Class Section: {{course.class_section}}</span>
+            <br>
+            <span>Start Time: {{course.start_time}}</span>
+            <br>
+            <span>End Time: {{course.end_time}}</span>
+            <br>
+            <span>Days: {{course.days}}</span>
             <br>
             <button class="saveBtn" (click)="addToSavedCourses(course)">Add to Saved Courses</button>
         </li>
