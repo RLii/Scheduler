@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { logging } from 'protractor';
 
 @Component({
   selector: 'app-main',
@@ -7,9 +8,19 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MainComponent implements OnInit {
 
+  //Login stuff
+  username: string;
+  password: string;
+
   constructor() { }
 
   ngOnInit(): void {
+    this.username = "";
+    this.password = "";
   }
 
+
+  login(){
+    console.log("LOGIN");
+  }
 }

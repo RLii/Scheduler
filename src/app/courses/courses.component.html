@@ -18,7 +18,10 @@
     <button (click)="clearSearches()">Clear Searches</button>
 
     <ul class = "courses">
-        <li class="allCourses" *ngFor="let course of filterResultsByClassCode(filterResultsByComponent(filterResultsByClassName(filterResultsBySubject(results))))">
+        <li class="allCourses" *ngFor="let course of filterResultsByClassCode(
+                                                     filterResultsByComponent(
+                                                     filterResultsByClassName(
+                                                     filterResultsBySubject(results))))">
             <span>Subject: {{course.subject}}</span>
             <br>
             <span>Course Code: {{course.course_code}}</span>

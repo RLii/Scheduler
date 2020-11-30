@@ -10,6 +10,7 @@ import { SchedulesComponent } from './schedules/schedules.component';
 import { SavedCoursesComponent } from './saved-courses/saved-courses.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { MainComponent } from './main/main.component';
+import { RegisterComponent } from './register/register.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { MainComponent } from './main/main.component';
     SchedulesComponent,
     SavedCoursesComponent,
     DashboardComponent,
-    MainComponent
+    MainComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,

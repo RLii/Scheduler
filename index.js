@@ -13,6 +13,7 @@ app.use(bodyParser.json())
 //console.log(db.get('courses').find({catalog_nbr:"1021B"}).value())
 const jason = db.get('courses').value();
 const dbSchedule = db.get('schedules').value();
+const dbUsers = db.get('users').value();
 
 //*********************************Functionality 1*
 app.get('/api/courses', (req, res) => {
@@ -258,6 +259,40 @@ app.delete('/api/schedules', (req, res)=> {
       .write()
     
     res.send("Deleted.")
+})
+
+//Add new user to the database
+app.post('/api/users', (req, res) => {
+     //using Joi to ensure that the required body contents is filled
+     const schema = Joi.object({
+        name: Joi.string().required().max(30),
+        email: Joi.string().email().required().max(30),
+        password: Joi.string().required().max(30)
+    })
+    if(schema.validate(req.body).error != undefined)
+    {
+        res.status(400).send(schema.validate(req.body).error.details[0].message)
+        return;
+    }
+
+    //Sanitizing body
+    req.body.name = sanitize(req.body.name);
+    req.body.email = sanitize(req.body.email);
+    req.body.password = sanitize(req.body.password);
+
+    if(dbUsers.filter(x => x.email == req.body.email).length != 0)
+    {
+        res.status(400).send("There is already an account with that email.");
+        return;
+    }
+
+    db.get('users')
+      .push({name : req.body.name,
+            email : req.body.email,
+            password : req.body.password})
+      .write()
+
+    res.status(200).send('Written.')
 })
 
 function sanitize (string){
