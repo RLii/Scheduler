@@ -267,7 +267,7 @@ app.post('/api/users', (req, res) => {
      const schema = Joi.object({
         name: Joi.string().required().max(30),
         email: Joi.string().email().required().max(30),
-        password: Joi.string().required().max(30)
+        password: Joi.string().required()
     })
     if(schema.validate(req.body).error != undefined)
     {
