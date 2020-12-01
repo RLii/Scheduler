@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { DbService } from './db.service';
+import { LocalStorageService} from './local-storage.service';
 
 @Component({
   selector: 'app-root',
@@ -7,4 +9,12 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'Scheduler';
+  constructor(private db :DbService, private ls: LocalStorageService){}
+  verify() {
+    this.db.verifyUser().subscribe(data =>{
+      var results: any = data
+      this.ls.setLog(results.email);
+      alert(this.ls.getLog());
+    })
+  }
 }

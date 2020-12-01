@@ -2,13 +2,20 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, map, tap } from 'rxjs/operators';
+import { LocalStorageService } from './local-storage.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DbService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private ls: LocalStorageService) { }
+
+
+  verifyUser(){
+    var temp = "bearer "+this.ls.getToken();
+    return this.http.get('/api/verify', {headers: new HttpHeaders({"authorization" : temp})})
+  }
 
   userLogin(email: string, password: string){
     return this.http.get('/api/users/'+email+'/' + password, {responseType: 'text'})

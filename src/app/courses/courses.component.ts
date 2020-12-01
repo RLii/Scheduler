@@ -16,6 +16,7 @@ export class CoursesComponent implements OnInit {
   searchByClassName: string;
   searchByClassCode: string;
   searchByComponent: string;
+  searchByKeyword: string;
 
 
   savedCourses: any[] = [];
@@ -30,6 +31,7 @@ export class CoursesComponent implements OnInit {
     this.searchByClassName ="";
     this.searchByClassCode = "";
     this.searchByComponent ="";
+    this.searchByKeyword="";
     this.displayCourses();
   }
 
@@ -46,11 +48,23 @@ export class CoursesComponent implements OnInit {
   filterResultsByComponent(results:any){
     return results.filter(x=> x.component.indexOf(this.searchByComponent.toUpperCase()) > -1);
   }
+  filterResultsByKeyword(results:any){
+    if(this.searchByKeyword.length >= 4)
+    {
+      return results.filter(x=> 
+                                x.course_code.toString().indexOf(this.searchByKeyword.toUpperCase()) > -1 || 
+                                x.class_name.indexOf(this.searchByKeyword.toUpperCase()) > -1)
+    }
+    else{
+      return results;
+    }
+  }
   clearSearches(){
     this.searchByClassCode = "";
     this.searchByClassName = "";
     this.searchByComponent = "";
     this.searchBySubject = "";
+    this.searchByKeyword = "";
   }
 
   displayCourses(){

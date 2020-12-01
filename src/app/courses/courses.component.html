@@ -15,13 +15,18 @@
     <p>Search By Component</p>
     <input [(ngModel)] = "searchByComponent">
     <br>
+    <p>Search By Keyword</p>
+    <input [(ngModel)] = "searchByKeyword">
+    <br>
+
     <button (click)="clearSearches()">Clear Searches</button>
 
     <ul class = "courses">
         <li class="allCourses" *ngFor="let course of filterResultsByClassCode(
                                                      filterResultsByComponent(
                                                      filterResultsByClassName(
-                                                     filterResultsBySubject(results))))">
+                                                     filterResultsBySubject(
+                                                     filterResultsByKeyword(results)))))">
             <span>Subject: {{course.subject}}</span>
             <br>
             <span>Course Code: {{course.course_code}}</span>

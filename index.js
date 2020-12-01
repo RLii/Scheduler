@@ -108,7 +108,9 @@ app.get('/api/courses/:subject/:courseCode', (req, res)=> {
 app.post('/api/schedules', (req, res)=>{
     //using Joi to ensure that the required body contents is filled
     const schema = Joi.object({
-        schedule_name : Joi.string().required().max(16)
+        schedule_name : Joi.string().required().max(16),
+        public: Joi.bool().required(),
+        email: Joi.string().email().required
     })
     if(schema.validate(req.body).error != undefined)
     {
@@ -123,7 +125,9 @@ app.post('/api/schedules', (req, res)=>{
     if(filteredDb.length == 0)
     {
         db.get('schedules')
-          .push({"schedule_name" : req.body.schedule_name})
+          .push({"schedule_name" : req.body.schedule_name, 
+                 "public" : req.body.public,
+                 "email" : req.body.email})
           .write()
         res.status(200).send("Written.")
     }
@@ -294,12 +298,15 @@ app.post('/api/users', (req, res) => {
       .push({name : req.body.name,
             email : req.body.email,
             hash : hash,
-            salt : salt})
+            salt : salt,
+            active: true,
+            siteManager: false})
       .write()
 
     res.status(200).send('Registration Successful!')
 })
 
+//Login!
 app.get('/api/users/:email/:password', (req, res) =>{
     req.params.email = sanitize(req.params.email);
     req.params.password = sanitize (req.params.password);
@@ -308,14 +315,46 @@ app.get('/api/users/:email/:password', (req, res) =>{
     if(userInfo.length == 0)
     {
         res.status(400).send("The following combination is not correct. Please try again")
+        return;
+    }
+    if(userInfo[0].active == false)
+    {
+        res.status(400).send("The account has been deactivated. Please contact the site admin.")
+        return;
     }
     const salt = userInfo[0].salt;
     if(bcrypt.hashSync(req.params.password, salt) == userInfo[0].hash)
     {
-        const token = jwt.sign({email: req.params.email,uberSecret: "wow this is so secret "+ req.params.email.substring(1)}, 'supersecretshhhhh')
+        const token = jwt.sign({email: req.params.email}, 'supersecretshhhhh')
         res.status(200).send(token)
     }
 })
+app.get('/api/verify', verifyToken, (req, res)=>{
+    jwt.verify(req.token, 'supersecretshhhhh',(err, authData) =>{
+        if(err){
+            res.status(200).send({});
+            return
+        }
+        else{
+            res.status(200).send(authData);
+        }
+    })
+})
+
+function verifyToken(req, res, next){
+    const bearerHeader = req.headers['authorization'];
+
+    if(typeof bearerHeader !== 'undefined'){
+        const bearer = bearerHeader.split(' ');
+        const bearerToken = bearer[1];
+        req.token = bearerToken;
+        next();
+    }
+    else{
+        res.status("403").send("Please Log in before accessing this functionality");
+    }
+
+}
 
 function sanitize (string){
     const map = {

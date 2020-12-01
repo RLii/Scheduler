@@ -3,8 +3,7 @@ import { logging } from 'protractor';
 import { fromEventPattern } from 'rxjs';
 import { DbService }from '../db.service';
 import { LocalStorageService } from '../local-storage.service';
-import { ActivatedRoute, Params } from '@angular/router';
-
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
@@ -16,7 +15,7 @@ export class MainComponent implements OnInit {
   email: string;
   password: string;
 
-  constructor(private db:DbService) { }
+  constructor(private db:DbService, private router: Router, private ls :LocalStorageService) { }
 
   ngOnInit(): void {
     this.email = "";
@@ -26,7 +25,9 @@ export class MainComponent implements OnInit {
 
   login(){
     this.db.userLogin(this.email, this.password).subscribe(data => {
-      alert(data);
+      this.ls.setToken(data);
+      
+      alert("Logged in!");
     }, error => {
       alert(error.error);
     })
