@@ -5,6 +5,8 @@ const Joi = require('joi')
 const lowDB = require("lowdb");
 const fileSync = require("lowdb/adapters/FileSync");
 const { join } = require('path');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const db = lowDB(new fileSync("db.json"))
 app.use('/', express.static('dist/se3316-lab5'))
@@ -267,7 +269,7 @@ app.post('/api/users', (req, res) => {
      const schema = Joi.object({
         name: Joi.string().required().max(30),
         email: Joi.string().email().required().max(30),
-        password: Joi.string().required()
+        password: Joi.string().required().max(30)
     })
     if(schema.validate(req.body).error != undefined)
     {
@@ -286,13 +288,33 @@ app.post('/api/users', (req, res) => {
         return;
     }
 
+    var salt = bcrypt.genSaltSync(10);
+    var hash = bcrypt.hashSync(req.body.password, salt)
     db.get('users')
       .push({name : req.body.name,
             email : req.body.email,
-            password : req.body.password})
+            hash : hash,
+            salt : salt})
       .write()
 
-    res.status(200).send('Written.')
+    res.status(200).send('Registration Successful!')
+})
+
+app.get('/api/users/:email/:password', (req, res) =>{
+    req.params.email = sanitize(req.params.email);
+    req.params.password = sanitize (req.params.password);
+
+    const userInfo = dbUsers.filter(x => x.email == req.params.email);
+    if(userInfo.length == 0)
+    {
+        res.status(400).send("The following combination is not correct. Please try again")
+    }
+    const salt = userInfo[0].salt;
+    if(bcrypt.hashSync(req.params.password, salt) == userInfo[0].hash)
+    {
+        const token = jwt.sign({email: req.params.email,uberSecret: "wow this is so secret "+ req.params.email.substring(1)}, 'supersecretshhhhh')
+        res.status(200).send(token)
+    }
 })
 
 function sanitize (string){

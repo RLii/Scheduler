@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { logging } from 'protractor';
+import { fromEventPattern } from 'rxjs';
+import { DbService }from '../db.service';
+import { LocalStorageService } from '../local-storage.service';
+import { ActivatedRoute, Params } from '@angular/router';
 
 @Component({
   selector: 'app-main',
@@ -9,18 +13,22 @@ import { logging } from 'protractor';
 export class MainComponent implements OnInit {
 
   //Login stuff
-  username: string;
+  email: string;
   password: string;
 
-  constructor() { }
+  constructor(private db:DbService) { }
 
   ngOnInit(): void {
-    this.username = "";
+    this.email = "";
     this.password = "";
   }
 
 
   login(){
-    console.log("LOGIN");
+    this.db.userLogin(this.email, this.password).subscribe(data => {
+      alert(data);
+    }, error => {
+      alert(error.error);
+    })
   }
 }

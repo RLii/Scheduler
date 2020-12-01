@@ -10,6 +10,10 @@ export class DbService {
 
   constructor(private http: HttpClient) { }
 
+  userLogin(email: string, password: string){
+    return this.http.get('/api/users/'+email+'/' + password, {responseType: 'text'})
+  }
+
   registerUser(name: string, email: string, password: string){
     return this.http.post('/api/users' , {
       name: name,

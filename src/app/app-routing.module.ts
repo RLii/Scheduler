@@ -10,7 +10,8 @@ const routes: Routes = [
   {path: 'schedules', component: SchedulesComponent},
   {path: 'courses', component: CoursesComponent},
   {path: 'main', component: MainComponent},
-  {path: 'register', component: RegisterComponent}
+  {path: 'register', component: RegisterComponent},
+  {path: '', redirectTo:'main',pathMatch: 'full'}
 ];
 
 @NgModule({
