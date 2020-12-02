@@ -54,9 +54,28 @@ export class DemoSchedulesComponent implements OnInit {
     this.db.getSchedules().subscribe(data => {
       this.results = data
       this.results = this.results.result.filter(x=> x.public == true)
+      if(this.results.length > 10)
+      {
+        let length = this.results.length;
+        for (let i = 1; i < length; i++) {
+        let key = this.results[i];
+        let j = i - 1;
+        while (j >= 0 && this.results[j].last_edit.replace(/\D/g, '') > key.last_edit.replace(/\D/g, '')) {
+          this.results[j + 1] = this.results[j];
+            j = j - 1;
+        }
+        this.results[j + 1] = key;
+        }
+        while(this.results.length > 10)
+        {
+          this.results.pop();
+        }
+      }
+      
   })
   this.timetable = undefined;
-}
+  }
+  
 
   createNewSchedule(){
     this.db.saveSchedule(this.newScheduleName, this.isPublic, this.description).subscribe(data=>{
