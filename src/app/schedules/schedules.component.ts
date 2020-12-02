@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { DbService } from '../db.service'
 import {SavedCoursesService} from '../saved-courses.service'
+import { MatExpansionModule }from '@angular/material/expansion';
+
 
 @Component({
   selector: 'app-schedules',
@@ -11,6 +13,8 @@ export class SchedulesComponent implements OnInit {
 
   newScheduleName: string;
   isPublic: boolean;
+  description: string;
+
   deleteScheduleName: string;
   
   timetableSchName: string;
@@ -32,10 +36,18 @@ export class SchedulesComponent implements OnInit {
   days: any[] =[];
 
   constructor(private db: DbService,
-              private scService: SavedCoursesService) {this.isPublic = false }
+              private scService: SavedCoursesService) {this.isPublic = false , this.description = ""}
 
   ngOnInit(): void {
     this.displaySchedules();
+  }
+
+
+  makePrivate(){
+    this.isPublic=false;
+  }
+  makePublic(){
+    this.isPublic=true;
   }
 
   displaySchedules(){
@@ -47,7 +59,7 @@ export class SchedulesComponent implements OnInit {
 }
 
   createNewSchedule(){
-    this.db.saveSchedule(this.newScheduleName, this.isPublic,"").subscribe(data=>{
+    this.db.saveSchedule(this.newScheduleName, this.isPublic, this.description).subscribe(data=>{
       alert(data)
       this.displaySchedules();
     },error =>{

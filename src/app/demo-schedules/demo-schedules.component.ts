@@ -53,7 +53,7 @@ export class DemoSchedulesComponent implements OnInit {
   displaySchedules(){
     this.db.getSchedules().subscribe(data => {
       this.results = data
-      this.results = this.results.result
+      this.results = this.results.result.filter(x=> x.public == true)
   })
   this.timetable = undefined;
 }

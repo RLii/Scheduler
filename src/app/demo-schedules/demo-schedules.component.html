@@ -1,19 +1,5 @@
 
 <h2>Schedules</h2>
-<button (click)="createNewSchedule()">Create New Schedule Named: </button>
-<input [(ngModel)] ="newScheduleName">
-<br>
-<div *ngIf="isPublic"><p>The new schedule will be public</p></div>
-<div *ngIf="!isPublic"><p>The new schedule will be private</p></div>
-<button (click)="makePublic()">SetToPublic</button>
-<button (click)="makePrivate()">SetToPrivate</button>
-<br>
-<p>Description for new schedule (optional) :</p><input [(ngModel)] = "description">
-<br>
-<button (click)="deleteSchedule()">Delete a Schedule Named: </button>
-<input [(ngModel)] ="deleteScheduleName">
-<br>
-<button (click)="deleteSchedules()">Delete All Schedules</button>
 
 
 <div *ngIf="timetable">
@@ -55,10 +41,15 @@
                 <mat-panel-description>
                     <span>Schedule Name: {{sch.schedule_name}} </span>
                     <br>
+                    <span>Schedule Creator: {{sch.email}} </span>
+                    <br>
+                    <span>Number of courses: {{sch.num_of_courses}} </span>
+                    <br>
                     <button class="schBtns" (click)="openTimeTable(sch)">Open Timetable</button>
-                    <button class="schBtns" (click)="importCourses(sch)">Import Saved Courses into Schedule</button>
                 </mat-panel-description>
             </mat-expansion-panel-header>
+            Courses: {{sch.course_codes}}
+            Description: {{sch.description}}
         </mat-expansion-panel>
     </mat-accordion>
 </div>

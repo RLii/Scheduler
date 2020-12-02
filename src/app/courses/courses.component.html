@@ -21,33 +21,38 @@
 
     <button (click)="clearSearches()">Clear Searches</button>
 
-    <ul class = "courses">
-        <li class="allCourses" *ngFor="let course of filterResultsByClassCode(
-                                                     filterResultsByComponent(
-                                                     filterResultsByClassName(
-                                                     filterResultsBySubject(
-                                                     filterResultsByKeyword(results)))))">
-            <mat-expansion-panel hideToggle>
-            <span>Subject: {{course.subject}}</span>
-            <br>
-            <span>Course Code: {{course.course_code}}</span>
-            <br>
-            <span>Class Name: {{course.class_name}}</span>
-            <br>
-            <span>Component: {{course.component}}</span>
-            <br>
-            <span>Class Section: {{course.class_section}}</span>
-            <br>
-            <span>Start Time: {{course.start_time}}</span>
-            <br>
-            <span>End Time: {{course.end_time}}</span>
-            <br>
-            <span>Days: {{course.days}}</span>
-            <br>
-            <button class="saveBtn" (click)="addToSavedCourses(course)">Add to Saved Courses</button>
-            </mat-expansion-panel>
-        </li>
-    </ul>
+    <mat-accordion class="accords"  *ngFor="let course of filterResultsByClassCode(
+        filterResultsByComponent(
+        filterResultsByClassName(
+        filterResultsBySubject(
+        filterResultsByKeyword(results)))))">
+    <mat-expansion-panel hideToggle>
+        <mat-expansion-panel-header [expandedHeight]="'190px'" [collapsedHeight]="'190px'">
+            <mat-panel-description>
+                Subject:{{course.subject}}
+                <br>
+                Course Code: {{course.course_code}}
+                <br>
+                Class Name: {{course.class_name}}
+                <br>
+                Component: {{course.component}}
+                <br>
+                Class Section: {{course.class_section}}
+                <br>
+                Start Time: {{course.start_time}}
+                <br>
+                End Time: {{course.end_time}}
+                <br>
+                Days: {{course.days}}
+                <br>
+                <button class="saveBtn" (click)="addToSavedCourses(course)">Add to Saved Courses</button>
+            </mat-panel-description>
+        </mat-expansion-panel-header>
+        Campus Location: {{course.campus}}
+        <br>
+        Course Description: {{course.description}}
+    </mat-expansion-panel>
+</mat-accordion>
 </div>
 <div *ngIf="!results">
     <p>Loading...</p>

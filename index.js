@@ -251,8 +251,10 @@ app.get('/api/schedules', (req, res)=> {
             tempJ = {
                 "schedule_name" : dbSchedule[x].schedule_name,
                 "email" : dbSchedule[x].email,
+                "public": dbSchedule[x].public,
                 "course_codes": dbSchedule[x].course_codes,
                 "last_edit": dbSchedule[x].last_edit,
+                "description" : dbSchedule[x].description,
                 "num_of_courses": dbSchedule[x].course_codes.length
             }
         }
@@ -261,7 +263,9 @@ app.get('/api/schedules', (req, res)=> {
             tempJ = {
                 "schedule_name" : dbSchedule[x].schedule_name,
                 "last_edit": dbSchedule[x].last_edit,
+                "public": dbSchedule[x].public,
                 "email" : dbSchedule[x].email,
+                "description" : dbSchedule[x].description,
                 "course_codes": "empty",
                 "num_of_courses": 0
             }
