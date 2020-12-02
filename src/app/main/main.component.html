@@ -1,6 +1,6 @@
 <p>Welcome to Scheduler! With this site you are able to view the courses provided by Western University,
     as well as create lists of courses to display a mock timetable! Please register or log in to gain full access
-    to all functionalitys!
+    to all functionalitys! Below, you will find a preview of the available functionalitys.
 </p>
 
 
@@ -12,5 +12,17 @@
 <p>Password</p>
 <input [(ngModel)] = "password">
 <button (click)="login()">Login</button>
+<br>
 <a routerLink="/register">Register Here</a>
+<br>
+<br>
+<button (click) = "showCourses()">Courses</button>
+<button (click) = "showSchedules()">Schedules</button>
+<div *ngIf="showCourse == true">
+    <app-demo-courses></app-demo-courses>
+</div>
+<div *ngIf="showCourse == false">
+    <app-demo-schedules></app-demo-schedules>
+</div>
+
 

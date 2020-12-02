@@ -27,6 +27,7 @@
                                                      filterResultsByClassName(
                                                      filterResultsBySubject(
                                                      filterResultsByKeyword(results)))))">
+            <mat-expansion-panel hideToggle>
             <span>Subject: {{course.subject}}</span>
             <br>
             <span>Course Code: {{course.course_code}}</span>
@@ -44,6 +45,7 @@
             <span>Days: {{course.days}}</span>
             <br>
             <button class="saveBtn" (click)="addToSavedCourses(course)">Add to Saved Courses</button>
+            </mat-expansion-panel>
         </li>
     </ul>
 </div>

@@ -1,0 +1,40 @@
+<app-saved-courses [savedCourses]="savedCourses"></app-saved-courses>
+
+<h2>Courses</h2>
+
+<div *ngIf="results">
+    <p>Search By Subject</p>
+    <input [(ngModel)] = "searchBySubject">
+    <br>
+    <p>Search By Class Name</p>
+    <input [(ngModel)] = "searchByClassName">
+    <br>
+    <p>Search By Class Code</p>
+    <input [(ngModel)] = "searchByClassCode">
+    <br>
+    <p>Search By Component</p>
+    <input [(ngModel)] = "searchByComponent">
+    <br>
+    <p>Search By Keyword</p>
+    <input [(ngModel)] = "searchByKeyword">
+    <br>
+
+    <button (click)="clearSearches()">Clear Searches</button>
+
+    <mat-accordion>
+    <mat-expansion-panel hideToggle>
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                re
+            </mat-panel-title>
+            <mat-panel-description>
+                hi
+            </mat-panel-description>
+        </mat-expansion-panel-header>
+        ree
+    </mat-expansion-panel>
+</mat-accordion>
+</div>
+<div *ngIf="!results">
+    <p>Loading...</p>
+</div>

@@ -1,8 +1,11 @@
 
 <h1>{{title}}</h1>
-<nav>
-    <a routerLink="/main">Login</a>
-    <a (click) = "verify()" routerLink="/courses">Courses</a>
-    <a (click) = "verify()" routerLink="/schedules">Schedules</a>
-</nav>
+<div *ngIf="login">
+    <nav>
+        <a routerLink="/main">Login</a>
+        <a (click) = "verifyCourse()" >Courses</a>
+        <a (click) = "verifySchedule()" >Schedules</a>
+    </nav>
+</div>
+
 <router-outlet></router-outlet>

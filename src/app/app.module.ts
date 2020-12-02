@@ -11,7 +11,8 @@ import { SavedCoursesComponent } from './saved-courses/saved-courses.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { MainComponent } from './main/main.component';
 import { RegisterComponent } from './register/register.component';
-
+import { DemoCoursesComponent } from './demo-courses/demo-courses.component';
+import { DemoSchedulesComponent } from './demo-schedules/demo-schedules.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -20,7 +21,9 @@ import { RegisterComponent } from './register/register.component';
     SavedCoursesComponent,
     DashboardComponent,
     MainComponent,
-    RegisterComponent
+    RegisterComponent,
+    DemoCoursesComponent,
+    DemoSchedulesComponent
   ],
   imports: [
     BrowserModule,
