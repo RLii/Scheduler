@@ -13,6 +13,8 @@ import { MainComponent } from './main/main.component';
 import { RegisterComponent } from './register/register.component';
 import { DemoCoursesComponent } from './demo-courses/demo-courses.component';
 import { DemoSchedulesComponent } from './demo-schedules/demo-schedules.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatExpansionModule} from '@angular/material/expansion';
 @NgModule({
   declarations: [
     AppComponent,
@@ -29,7 +31,9 @@ import { DemoSchedulesComponent } from './demo-schedules/demo-schedules.componen
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    BrowserAnimationsModule,
+    MatExpansionModule
   ],
   providers: [],
   bootstrap: [AppComponent]

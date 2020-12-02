@@ -30,7 +30,9 @@ app.get('/api/courses', (req, res) => {
             "class_section" : jason[x].course_info[0].class_section,
             "start_time": jason[x].course_info[0].start_time,
             "end_time": jason[x].course_info[0].end_time,
-            "days": jason[x].course_info[0].days
+            "days": jason[x].course_info[0].days,
+            "campus" : jason[x].course_info[0].campus,
+            "description": jason[x].catalog_description
         }
         result.push(tempJ)
     }
@@ -110,7 +112,8 @@ app.post('/api/schedules', (req, res)=>{
     const schema = Joi.object({
         schedule_name : Joi.string().required().max(16),
         public: Joi.bool().required(),
-        email: Joi.string().email().required
+        email: Joi.string().email().required(),
+        description: Joi.string()
     })
     if(schema.validate(req.body).error != undefined)
     {
@@ -124,10 +127,14 @@ app.post('/api/schedules', (req, res)=>{
     const filteredDb = dbSchedule.filter(element => element.schedule_name === req.body.schedule_name)
     if(filteredDb.length == 0)
     {
+        const dateTime = new Date();
         db.get('schedules')
           .push({"schedule_name" : req.body.schedule_name, 
                  "public" : req.body.public,
-                 "email" : req.body.email})
+                 "email" : req.body.email,
+                 "reviews" : [],
+                 "description":req.body.description,
+                 "last_edit": dateTime})
           .write()
         res.status(200).send("Written.")
     }
@@ -169,12 +176,13 @@ app.put('/api/schedules/schedule-contents', (req, res) => {
 
     const filteredDb = dbSchedule.filter(element => element.schedule_name == req.body.schedule_name)
     if(filteredDb.length != 0){
-        
+        const dateTime = new Date();
         db.get('schedules')
           .find({schedule_name : req.body.schedule_name})
           .assign({subjects: req.body.subjects})
           .assign({course_codes: req.body.course_codes})
           .assign({components: req.body.components})
+          .assign({last_edit: dateTime})
           .write()
     
         res.status(200).send('Written.')
@@ -242,6 +250,9 @@ app.get('/api/schedules', (req, res)=> {
         if(dbSchedule[x].course_codes != undefined){
             tempJ = {
                 "schedule_name" : dbSchedule[x].schedule_name,
+                "email" : dbSchedule[x].email,
+                "course_codes": dbSchedule[x].course_codes,
+                "last_edit": dbSchedule[x].last_edit,
                 "num_of_courses": dbSchedule[x].course_codes.length
             }
         }
@@ -249,6 +260,9 @@ app.get('/api/schedules', (req, res)=> {
         {
             tempJ = {
                 "schedule_name" : dbSchedule[x].schedule_name,
+                "last_edit": dbSchedule[x].last_edit,
+                "email" : dbSchedule[x].email,
+                "course_codes": "empty",
                 "num_of_courses": 0
             }
         }

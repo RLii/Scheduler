@@ -35,10 +35,13 @@ export class DbService {
   getSchedules(){
     return this.http.get('/api/schedules')
   }
-  saveSchedule(name: string){
+  saveSchedule(name: string, isPublic: boolean, description: string){
 
     return this.http.post('/api/schedules', {
-      schedule_name: name
+      schedule_name: name,
+      public: isPublic,
+      description: description,
+      email: this.ls.getLog()
     },{responseType: 'text'})
   }
   deleteAllSchedules(){

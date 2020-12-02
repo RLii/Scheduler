@@ -10,6 +10,7 @@ import {SavedCoursesService} from '../saved-courses.service'
 export class SchedulesComponent implements OnInit {
 
   newScheduleName: string;
+  isPublic: boolean;
   deleteScheduleName: string;
   
   timetableSchName: string;
@@ -31,7 +32,7 @@ export class SchedulesComponent implements OnInit {
   days: any[] =[];
 
   constructor(private db: DbService,
-              private scService: SavedCoursesService) { }
+              private scService: SavedCoursesService) {this.isPublic = false }
 
   ngOnInit(): void {
     this.displaySchedules();
@@ -46,7 +47,7 @@ export class SchedulesComponent implements OnInit {
 }
 
   createNewSchedule(){
-    this.db.saveSchedule(this.newScheduleName).subscribe(data=>{
+    this.db.saveSchedule(this.newScheduleName, this.isPublic,"").subscribe(data=>{
       alert(data)
       this.displaySchedules();
     },error =>{

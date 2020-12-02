@@ -1,4 +1,3 @@
-<app-saved-courses [savedCourses]="savedCourses"></app-saved-courses>
 
 <h2>Courses</h2>
 
@@ -21,17 +20,36 @@
 
     <button (click)="clearSearches()">Clear Searches</button>
 
-    <mat-accordion>
+    <mat-accordion class="accords"  *ngFor="let course of filterResultsByClassCode(
+        filterResultsByComponent(
+        filterResultsByClassName(
+        filterResultsBySubject(
+        filterResultsByKeyword(results)))))">
     <mat-expansion-panel hideToggle>
-        <mat-expansion-panel-header>
-            <mat-panel-title>
-                re
-            </mat-panel-title>
+        <mat-expansion-panel-header [expandedHeight]="'190px'" [collapsedHeight]="'190px'">
             <mat-panel-description>
-                hi
+                Subject:{{course.subject}}
+                <br>
+                Course Code: {{course.course_code}}
+                <br>
+                Class Name: {{course.class_name}}
+                <br>
+                Component: {{course.component}}
+                <br>
+                Class Section: {{course.class_section}}
+                <br>
+                Start Time: {{course.start_time}}
+                <br>
+                End Time: {{course.end_time}}
+                <br>
+                Days: {{course.days}}
+                <br>
+                <button class="saveBtn" (click)="addToSavedCourses(course)">Add to Saved Courses</button>
             </mat-panel-description>
         </mat-expansion-panel-header>
-        ree
+        Campus Location: {{course.campus}}
+        <br>
+        Course Description: {{course.description}}
     </mat-expansion-panel>
 </mat-accordion>
 </div>
