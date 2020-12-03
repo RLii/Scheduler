@@ -1,21 +1,5 @@
 <app-saved-courses [savedCourses]="savedCourses"></app-saved-courses>
 
-<h2>Schedules</h2>
-<button (click)="createNewSchedule()">Create New Schedule Named: </button>
-<input [(ngModel)] ="newScheduleName">
-<br>
-<div *ngIf="isPublic"><p>The new schedule will be public</p></div>
-<div *ngIf="!isPublic"><p>The new schedule will be private</p></div>
-<button (click)="makePublic()">SetToPublic</button>
-<button (click)="makePrivate()">SetToPrivate</button>
-<br>
-<p>Description for new schedule (optional) :</p><input [(ngModel)] = "description">
-<br>
-<button (click)="deleteSchedule()">Delete a Schedule Named: </button>
-<input [(ngModel)] ="deleteScheduleName">
-<br>
-<button (click)="deleteSchedules()">Delete All Schedules</button>
-
 
 <div *ngIf="timetable">
     <h3>Timetable for schedule {{timetableSchName}}</h3>
@@ -46,6 +30,25 @@
 </div>
 
 <div *ngIf="results">
+    <h2>Schedules</h2>
+<div class="newSchedules">
+    <button (click)="createNewSchedule()">Create New Schedule Named: </button>
+    <input [(ngModel)] ="newScheduleName">
+    <br>
+    <div *ngIf="isPublic"><p>The new schedule will be public</p></div>
+    <div *ngIf="!isPublic"><p>The new schedule will be private</p></div>
+    <button (click)="makePublic()">SetToPublic</button>
+    <button (click)="makePrivate()">SetToPrivate</button>
+    <br>
+    <p>Description for new schedule (optional) :</p><input [(ngModel)] = "description">
+</div>
+<br>
+<button (click)="deleteSchedule()">Delete a Schedule Named: </button>
+<input [(ngModel)] ="deleteScheduleName">
+<br>
+<button (click)="deleteSchedules()">Delete All Schedules</button>
+
+
     <h3>All Schedules</h3>
     <div *ngIf="results.length ==0">
         <p>There are no schedules made</p>
@@ -61,11 +64,41 @@
                     <span>Number of courses: {{sch.num_of_courses}} </span>
                     <br>
                     <button class="schBtns" (click)="openTimeTable(sch)">Open Timetable</button>
-                    <button class="schBtns" (click)="importCourses(sch)">Import Saved Courses into Schedule</button>
+                    <button class="schBtns" (click)="editSchedule(sch)">Edit Schedule</button>
                 </mat-panel-description>
             </mat-expansion-panel-header>
+            Subjects: {{sch.subjects}}
             Courses: {{sch.course_codes}}
+            Components: {{sch.components}}
             Description: {{sch.description}}
         </mat-expansion-panel>
     </mat-accordion>
+</div>
+
+<div *ngIf="editing">
+    <button (click) = "displaySchedules()">Return to Schedules</button>
+    <h3>Editing Schedule {{editing.schedule_name}}</h3>
+
+    <button (click) ="importCourses(editing)">Add saved courses to this schedule</button>
+    <!--use "importCourses(sch)" to import new courses to a schedule-->
+    <p>Schedule Name : {{editing.schedule_name}}</p>
+    <input [(ngModel)] = editing.schedule_name>
+    <p>Is Public : {{editing.public}}</p>
+    <button (click)="editChangeVisibility()">Change Visibility</button>
+    <p>Description : {{editing.description}} </p>
+    <input [(ngModel)] = editing.description>
+    <div *ngIf="editing.subjects!= 'empty'">
+        <p class="forLoop" *ngFor="let x of editing.subjects; index as i">
+            <b>course {{i+1}}</b>
+            <br>
+            Subject : {{editing.subjects[i]}}
+            <br>
+            CourseCode: {{editing.course_codes[i]}}
+            <br>
+            Component : {{editing.components[i]}}
+            <br>
+            <button (click) ="editRemoveCourse(i)">Remove Course</button>
+        </p>
+    </div>
+    <button (click)="editSave()">SaveEdits</button>
 </div>

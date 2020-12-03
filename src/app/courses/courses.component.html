@@ -1,8 +1,15 @@
 <app-saved-courses [savedCourses]="savedCourses"></app-saved-courses>
 
-<h2>Courses</h2>
+<div *ngIf="reviewedCourse">
+    <h3>Write a review</h3>
+    <p>What do you have to say about this course?</p>
+    <input [(ngModel)] = "review">
+<button (click)="saveReview()">Save Review</button>
+</div>
+
 
 <div *ngIf="results">
+    <h2>Courses</h2>
     <p>Search By Subject</p>
     <input [(ngModel)] = "searchBySubject">
     <br>
@@ -46,6 +53,7 @@
                 Days: {{course.days}}
                 <br>
                 <button class="saveBtn" (click)="addToSavedCourses(course)">Add to Saved Courses</button>
+                <button (click)="openReviews(course)">Add a Review for this course</button> 
             </mat-panel-description>
         </mat-expansion-panel-header>
         Campus Location: {{course.campus}}
@@ -54,6 +62,6 @@
     </mat-expansion-panel>
 </mat-accordion>
 </div>
-<div *ngIf="!results">
+<div *ngIf="!results && reviewedCourse == undefined">
     <p>Loading...</p>
 </div>

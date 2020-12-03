@@ -10,6 +10,11 @@ import { MatExpansionModule }from '@angular/material/expansion';
 })
 export class CoursesComponent implements OnInit {
 
+  //review stuff
+  reviewedCourse: any;
+  review:string;
+
+
   results: any;
 
   //Searches
@@ -33,6 +38,21 @@ export class CoursesComponent implements OnInit {
     this.searchByClassCode = "";
     this.searchByComponent ="";
     this.searchByKeyword="";
+    this.displayCourses();
+  }
+
+  openReviews(course: any){
+    this.results = undefined;
+    this.reviewedCourse = course;
+
+  }
+
+  saveReview(){
+    this.db.writeReview(this.reviewedCourse.subject, this.reviewedCourse.course_code, this.reviewedCourse.component, this.review).subscribe(data =>{
+      alert(data)
+    },error=>{
+      alert(error.error)
+    })
     this.displayCourses();
   }
 
@@ -73,6 +93,7 @@ export class CoursesComponent implements OnInit {
       this.results = data
       this.results = this.results.result
     })
+    this.reviewedCourse = undefined;
   }
 
   addToSavedCourses(x: any){

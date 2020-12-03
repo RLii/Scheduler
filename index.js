@@ -113,7 +113,7 @@ app.post('/api/schedules', (req, res)=>{
         schedule_name : Joi.string().required().max(16),
         public: Joi.bool().required(),
         email: Joi.string().email().required(),
-        description: Joi.string()
+        description: Joi.string().allow('')
     })
     if(schema.validate(req.body).error != undefined)
     {
@@ -124,6 +124,11 @@ app.post('/api/schedules', (req, res)=>{
     //Sanitizing body
     req.body.schedule_name = sanitize(req.body.schedule_name);
 
+    if(dbSchedule.filter(element => element.email == req.body.email).length >20)
+    {
+        res.status(400).send("You already have 20 course lists made. Please delete some to create more");
+        return;
+    }
     const filteredDb = dbSchedule.filter(element => element.schedule_name === req.body.schedule_name)
     if(filteredDb.length == 0)
     {
@@ -132,7 +137,6 @@ app.post('/api/schedules', (req, res)=>{
           .push({"schedule_name" : req.body.schedule_name, 
                  "public" : req.body.public,
                  "email" : req.body.email,
-                 "reviews" : [],
                  "description":req.body.description,
                  "last_edit": dateTime})
           .write()
@@ -145,7 +149,7 @@ app.post('/api/schedules', (req, res)=>{
 
 })
 
-//***********************************Functionality 5*
+//***********************************adds and replaces courses in a schedule
 app.put('/api/schedules/schedule-contents', (req, res) => {
     //using Joi to ensure that the required body contents is filled
     const schema = Joi.object({
@@ -252,6 +256,8 @@ app.get('/api/schedules', (req, res)=> {
                 "schedule_name" : dbSchedule[x].schedule_name,
                 "email" : dbSchedule[x].email,
                 "public": dbSchedule[x].public,
+                "subjects" : dbSchedule[x].subjects,
+                "components" : dbSchedule[x].components,
                 "course_codes": dbSchedule[x].course_codes,
                 "last_edit": dbSchedule[x].last_edit,
                 "description" : dbSchedule[x].description,
@@ -267,6 +273,8 @@ app.get('/api/schedules', (req, res)=> {
                 "email" : dbSchedule[x].email,
                 "description" : dbSchedule[x].description,
                 "course_codes": "empty",
+                "subjects" : "empty",
+                "components" : "empty",
                 "num_of_courses": 0
             }
         }
@@ -347,6 +355,7 @@ app.get('/api/users/:email/:password', (req, res) =>{
         res.status(200).send(token)
     }
 })
+//verifies user and returns the payload
 app.get('/api/verify', verifyToken, (req, res)=>{
     jwt.verify(req.token, 'supersecretshhhhh',(err, authData) =>{
         if(err){
@@ -359,9 +368,117 @@ app.get('/api/verify', verifyToken, (req, res)=>{
     })
 })
 
+//edits schedule content with a provided token
+app.put('/api/schedules/edit', verifyToken, (req, res) => {
+    jwt.verify(req.token, 'supersecretshhhhh',(err, authData) =>{
+        if(err){
+            res.status(200).send("unauthorized access");
+            return
+        }
+        console.log(req.body);
+        const email = authData.email;
+        const schema = Joi.object({
+            schedule_name: Joi.string().required().max(30),
+            new_name: Joi.string().required().max(30),
+            public: Joi.boolean().required(),
+            description: Joi.string().allow(''),
+            subjects: Joi.array().items(Joi.string()).required().single(),
+            course_codes: Joi.array().items(Joi.string()).required().single(),
+            components: Joi.array().items(Joi.string()).required().single()
+        })
+        if(schema.validate(req.body).error != undefined)
+        {
+            res.status(400).send(schema.validate(req.body).error.details[0].message)
+            return;
+        }
+    
+        //Sanitizing body
+        req.body.new_name = sanitize(req.body.new_name);
+        req.body.schedule_name = sanitize(req.body.schedule_name);
+        req.body.description = sanitize(req.body.description);
+        for(var x = 0 ; x < req.body.subjects.length; x++)
+        {
+            req.body.subjects[x] = sanitize(req.body.subjects[x]);
+            req.body.course_codes[x] = sanitize(req.body.course_codes[x]);
+            req.body.components[x] = sanitize(req.body.components[x]);
+        }
+    
+        const filteredDb = dbSchedule.filter(element => element.schedule_name == req.body.schedule_name)
+        if(filteredDb.length != 0){
+            const dateTime = new Date();
+            db.get('schedules')
+            .find({schedule_name : req.body.schedule_name})
+            .assign({schedule_name : req.body.new_name})
+            .assign({public: req.body.public})
+            .assign({description: req.body.description})
+            .assign({subjects: req.body.subjects})
+            .assign({course_codes: req.body.course_codes})
+            .assign({components: req.body.components})
+            .assign({last_edit: dateTime})
+            .write()
+        
+            res.status(200).send('Written.')
+        }
+        else{
+            res.status(400).send("A schedule with the requested name does not exist")
+        }
+
+    })
+})
+
+//Add review to course
+app.put('/api/courses/review', verifyToken, (req, res)=>{
+    jwt.verify(req.token, 'supersecretshhhhh',(err, authData) =>{
+        if(err){
+            res.status(200).send("unauthorized access");
+            return
+        }
+        const email = authData.email;
+        const dateTime = new Date();
+
+        const schema = Joi.object({
+            subject: Joi.string().required(),
+            course_code: Joi.string().required(),
+            component: Joi.string().required(),
+            review : Joi.string().required()
+        })
+        if(schema.validate(req.body).error != undefined)
+        {
+            res.status(400).send(schema.validate(req.body).error.details[0].message)
+            return;
+        }
+
+        req.body.subject = sanitize(req.body.subject);
+        req.body.course_code = sanitize(req.body.course_code);
+        req.body.component = sanitize(req.body.component);
+        req.body.review = sanitize(req.body.review);
+
+        const filteredDb = jason.filter(element => element.subject == req.body.subject && element.catalog_nbr == req.body.course_code && element.course_info[0].ssr_component == req.body.component)
+        console.log(filteredDb)
+        if(filteredDb.length != 0){
+            const dateTime = new Date();
+            db.get('courses')
+            .find({subject : req.body.subject, catalog_nbr : req.body.course_code})
+            .assign({review:{
+                content: req.body.review,
+                user: email,
+                date: dateTime
+            }})
+            .write()
+        
+            res.status(200).send('Written.')
+        }
+        else{
+            res.status(400).send("A course with the requested info is non existant")
+        }
+
+    
+})
+})
+
 function verifyToken(req, res, next){
     const bearerHeader = req.headers['authorization'];
-
+    console.log(req.headers)
     if(typeof bearerHeader !== 'undefined'){
         const bearer = bearerHeader.split(' ');
         const bearerToken = bearer[1];

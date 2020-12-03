@@ -8,8 +8,8 @@ import { AuthGuard } from './auth.service';
 
 
 const routes: Routes = [
-  {path: 'schedules', component: SchedulesComponent, canActivate: [AuthGuard]},
-  {path: 'courses', component: CoursesComponent, canActivate: [AuthGuard]},
+  {path: 'schedules', component: SchedulesComponent/*, canActivate: [AuthGuard]*/},
+  {path: 'courses', component: CoursesComponent/*, canActivate: [AuthGuard]*/},
   {path: 'main', component: MainComponent},
   {path: 'register', component: RegisterComponent},
   {path: '', redirectTo:'main',pathMatch: 'full'}

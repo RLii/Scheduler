@@ -12,6 +12,33 @@ export class DbService {
   constructor(private http: HttpClient, private ls: LocalStorageService) { }
 
 
+  writeReview(subject: string, course_code: string, component: string, review:string){
+    var temp = "bearer "+this.ls.getToken();
+    return this.http.put('/api/courses/review', {
+      subject: subject,
+      course_code: course_code,
+      component: component,
+      review:review
+    }, 
+    {headers: new HttpHeaders({"authorization" : temp} ),responseType:'text'})
+  }
+
+  saveEdits(oldName:string, json:any){
+    var temp = "bearer "+this.ls.getToken();
+    return this.http.put('/api/schedules/edit', {
+      
+            schedule_name: oldName,
+            new_name: json.schedule_name,
+            public: json.public,
+            description: json.description,
+            subjects: json.subjects,
+            course_codes: json.course_codes,
+            components: json.components
+    },
+    {headers: new HttpHeaders({"authorization" : temp,
+    }  ),responseType:"text"})
+  }
+
   verifyUser(){
     var temp = "bearer "+this.ls.getToken();
     return this.http.get('/api/verify', {headers: new HttpHeaders({"authorization" : temp})})

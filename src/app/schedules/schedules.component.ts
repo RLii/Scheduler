@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DbService } from '../db.service'
 import {SavedCoursesService} from '../saved-courses.service'
 import { MatExpansionModule }from '@angular/material/expansion';
+import { CommonModule } from '@angular/common';
 
 
 @Component({
@@ -10,6 +11,10 @@ import { MatExpansionModule }from '@angular/material/expansion';
   styleUrls: ['./schedules.component.scss']
 })
 export class SchedulesComponent implements OnInit {
+
+  //editing schedule
+  editing: any;
+  oldScheduleName: string;
 
   newScheduleName: string;
   isPublic: boolean;
@@ -42,6 +47,45 @@ export class SchedulesComponent implements OnInit {
     this.displaySchedules();
   }
 
+  editSave(){
+    this.db.saveEdits(this.oldScheduleName, this.editing).subscribe(data=>{
+      alert(data)
+    }, error=> {
+      alert(error.error)
+    })
+    this.displaySchedules();
+  }
+
+  editChangeVisibility(){
+    console.log(this.editing.public== false)
+    if(this.editing.public == false)
+    {
+      this.editing.public = true;
+    }
+    else{
+      this.editing.public = false
+    }
+  }
+
+  refreshEdits(){
+    var temp = this.editing;
+    this.editing = undefined;
+    this.editing = temp;
+  }
+
+  editRemoveCourse(index: Number){
+    this.editing.subjects.splice(index,1);
+    this.editing.course_codes.splice(index,1);
+    this.editing.components.splice(index,1);
+    this.refreshEdits();
+  }
+
+  editSchedule(param: any){
+    this.editing = param;
+    this.oldScheduleName = this.editing.schedule_name
+    console.log(this.editing)
+    this.results = undefined;
+  }
 
   makePrivate(){
     this.isPublic=false;
@@ -56,12 +100,14 @@ export class SchedulesComponent implements OnInit {
       this.results = this.results.result
   })
   this.timetable = undefined;
+  this.editing = undefined;
 }
 
   createNewSchedule(){
     this.db.saveSchedule(this.newScheduleName, this.isPublic, this.description).subscribe(data=>{
       alert(data)
       this.displaySchedules();
+      this.description ="";
     },error =>{
       alert(error.error)
     });
@@ -104,6 +150,7 @@ export class SchedulesComponent implements OnInit {
               this.resetVariables()
               this.scService.resetSavedCourses();
               this.savedCourses = [];
+              this.refreshEdits();
             },error => {
               alert(error.error)
             })
@@ -151,6 +198,7 @@ export class SchedulesComponent implements OnInit {
               this.timetable.push(this.temp);
             }
             this.results = undefined;
+            this.editing = undefined;
             this.resetVariables();
           }
         }, error => {
