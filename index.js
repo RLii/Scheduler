@@ -108,7 +108,12 @@ app.get('/api/courses/:subject/:courseCode', (req, res)=> {
 })
 
 //**********************************Functionality 4*
-app.post('/api/schedules', (req, res)=>{
+app.post('/api/schedules',verifyToken, (req, res)=>{
+    jwt.verify(req.token, 'supersecretshhhhh',(err, authData) =>{
+        if(err){
+            res.status(200).send("unauthorized access");
+            return
+        }
     //using Joi to ensure that the required body contents is filled
     const schema = Joi.object({
         schedule_name : Joi.string().required().max(16),
@@ -153,11 +158,16 @@ app.post('/api/schedules', (req, res)=>{
     {
         res.status(400).send("A schedule with the requested name is already in place")
     }
-
+})
 })
 
 //***********************************adds and replaces courses in a schedule
-app.put('/api/schedules/schedule-contents', (req, res) => {
+app.put('/api/schedules/schedule-contents',verifyToken, (req, res) => {
+    jwt.verify(req.token, 'supersecretshhhhh',(err, authData) =>{
+        if(err){
+            res.status(200).send("unauthorized access");
+            return
+        }
     //using Joi to ensure that the required body contents is filled
     const schema = Joi.object({
         schedule_name: Joi.string().required().max(20),
@@ -186,6 +196,11 @@ app.put('/api/schedules/schedule-contents', (req, res) => {
     }
 
     const filteredDb = dbSchedule.filter(element => element.schedule_name == req.body.schedule_name)
+    if(filteredDb[0].email != authData.email){
+        res.status(200).send("unauthorized access");
+        return
+
+    }
     if(filteredDb.length != 0){
         const dateTime = new Date();
         db.get('schedules')
@@ -201,6 +216,7 @@ app.put('/api/schedules/schedule-contents', (req, res) => {
     else{
         res.status(400).send("A schedule with the requested name does not exist")
     }
+})
 })
 
 //************************************Functionality 6*
@@ -224,7 +240,12 @@ app.get('/api/schedules/:name', (req, res) => {
 })
 
 //************************************Functionality 7*
-app.delete('/api/schedule', (req, res)=> {
+app.delete('/api/schedule',verifyToken, (req, res)=> {
+    jwt.verify(req.token, 'supersecretshhhhh',(err, authData) =>{
+        if(err){
+            res.status(200).send("unauthorized access");
+            return
+        }
     
     const schema = Joi.object({
         schedule_name: Joi.string().required().max(20)
@@ -238,6 +259,12 @@ app.delete('/api/schedule', (req, res)=> {
     req.body.schedule_name = sanitize(req.body.schedule_name)
 
     const filteredDb = dbSchedule.filter(element => element.schedule_name == req.body.schedule_name)
+    if(filteredDb[0].email != authData.email)
+    {
+        res.status(200).send("unauthorized access");
+        return
+    }
+
     if(filteredDb.length != 0){
         
         db.get('schedules')
@@ -249,6 +276,7 @@ app.delete('/api/schedule', (req, res)=> {
     else{
         res.status(400).send("A schedule with the requested name does not exist")
     }
+})
 })
 
 //************************************Functionality 8*//show all schedules
@@ -402,6 +430,11 @@ app.put('/api/schedules/edit', verifyToken, (req, res) => {
         }
     
         const filteredDb = dbSchedule.filter(element => element.schedule_name == req.body.schedule_name)
+        if(filteredDb[0].email != authData.email)
+        {
+            res.status(200).send("unauthorized access");
+            return
+        }
         if(filteredDb.length != 0){
             const dateTime = new Date();
             db.get('schedules')
@@ -493,6 +526,10 @@ app.put('/api/courses/review', verifyToken, (req, res)=>{
 app.get('/api/allusers',verifyToken, (req, res)=>{
     jwt.verify(req.token, 'supersecretshhhhh',(err, authData) =>{
         if(err){
+            res.status(200).send("unauthorized access");
+            return
+        }
+        if(authData.admin){
             res.status(200).send("unauthorized access");
             return
         }

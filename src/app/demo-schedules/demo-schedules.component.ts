@@ -87,23 +87,6 @@ export class DemoSchedulesComponent implements OnInit {
     });
   }
 
-  deleteSchedules(){
-  this.db.deleteAllSchedules().subscribe(data =>{
-    alert(data)
-    this.displaySchedules();
-  }, error => {
-    alert(error.error)
-  });
-  }
-
-  deleteSchedule(){
-    this.db.deleteASchedule(this.deleteScheduleName).subscribe(data =>{
-      alert(data);
-      this.displaySchedules();
-    },error => {
-      alert(error.error)
-    })
-  }
 
   importCourses(schedule:any){
     this.savedCourses = this.scService.getSavedCourses()

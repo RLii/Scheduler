@@ -102,7 +102,7 @@ export class SchedulesComponent implements OnInit {
   displaySchedules(){
     this.db.getSchedules().subscribe(data => {
       this.results = data
-      this.results = this.results.result.filter(x=> x.email == this.ls.getLog())
+      this.results = this.results.result.filter(x=> x.email == this.ls.getLog() || x.public == true)
       let length = this.results.length;
       for (let i = 1; i < length; i++) {
       let key = this.results[i];
@@ -128,14 +128,28 @@ export class SchedulesComponent implements OnInit {
     });
   }
 
+  deleteScheduleNamed(name: string){
+    if(confirm("are you sure you want to delete "+ name))
+    {
+      this.db.deleteASchedule(name).subscribe(data =>{
+        alert(data);
+        this.displaySchedules();
+      },error => {
+        alert(error.error)
+      })
+    }
+  }
 
   deleteSchedule(){
-    this.db.deleteASchedule(this.deleteScheduleName).subscribe(data =>{
-      alert(data);
-      this.displaySchedules();
-    },error => {
-      alert(error.error)
-    })
+    if(confirm("are you sure you want to delete "+ this.deleteScheduleName))
+    {
+      this.db.deleteASchedule(this.deleteScheduleName).subscribe(data =>{
+        alert(data);
+        this.displaySchedules();
+      },error => {
+        alert(error.error)
+      })
+    }
   }
 
   importCourses(schedule:any){

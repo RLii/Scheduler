@@ -81,27 +81,18 @@ export class DbService {
     return this.http.get('/api/schedules')
   }
   saveSchedule(name: string, isPublic: boolean, description: string){
-
+    var temp = "bearer "+this.ls.getToken();
     return this.http.post('/api/schedules', {
       schedule_name: name,
       public: isPublic,
       description: description,
       email: this.ls.getLog()
-    },{responseType: 'text'})
-  }
-  deleteAllSchedules(){
-    return this.http.delete('/api/schedules',  {responseType:'text'})
+    },{headers: new HttpHeaders({"authorization" : temp}),responseType:"text"})
   }
   deleteASchedule(name: string){
-    const options= {
-      headers: new HttpHeaders({'Content-Type': 'application/json'}),
-      body:{
-        schedule_name: name
-      },
-      responseType:'text'
-    }
+    var temp = "bearer "+this.ls.getToken();
     return this.http.request('delete','/api/schedule',{
-headers: new HttpHeaders({'Content-Type': 'application/json'}),
+headers: new HttpHeaders({'Content-Type': 'application/json','authorization': temp}),
       body:{
         schedule_name: name
       },
