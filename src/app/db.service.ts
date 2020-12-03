@@ -12,6 +12,10 @@ export class DbService {
   constructor(private http: HttpClient, private ls: LocalStorageService) { }
 
 
+  getReviews(subject:string, code: string, component:string){
+    return this.http.get('/api/courses/review'+subject+'/'+code+'/'+component)
+  }
+
   writeReview(subject: string, course_code: string, component: string, review:string){
     var temp = "bearer "+this.ls.getToken();
     return this.http.put('/api/courses/review', {

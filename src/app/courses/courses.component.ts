@@ -14,6 +14,7 @@ export class CoursesComponent implements OnInit {
   reviewedCourse: any;
   review:string;
 
+  foundReviews:any;
 
   results: any;
 
@@ -41,6 +42,8 @@ export class CoursesComponent implements OnInit {
     this.displayCourses();
   }
 
+
+
   openReviews(course: any){
     this.results = undefined;
     this.reviewedCourse = course;
@@ -53,7 +56,6 @@ export class CoursesComponent implements OnInit {
     },error=>{
       alert(error.error)
     })
-    this.displayCourses();
   }
 
   //Search Functions

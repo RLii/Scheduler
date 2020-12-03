@@ -454,11 +454,10 @@ app.put('/api/courses/review', verifyToken, (req, res)=>{
         req.body.review = sanitize(req.body.review);
 
         const filteredDb = jason.filter(element => element.subject == req.body.subject && element.catalog_nbr == req.body.course_code && element.course_info[0].ssr_component == req.body.component)
-        console.log(filteredDb)
         if(filteredDb.length != 0){
             const dateTime = new Date();
             db.get('courses')
-            .find({subject : req.body.subject, catalog_nbr : req.body.course_code})
+            .find({subject : req.body.subject, catalog_nbr : req.body.course_code, ssr_component : req.body.component})
             .assign({review:{
                 content: req.body.review,
                 user: email,
@@ -474,6 +473,14 @@ app.put('/api/courses/review', verifyToken, (req, res)=>{
 
     
 })
+})
+
+app.put('/grrr', (req, res)=>{
+    db.get('courses')
+    .find('')
+    .assign({review:[]})
+    .write()
+    res.status(200).send("AWfegdhjf")
 })
 
 function verifyToken(req, res, next){

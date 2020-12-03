@@ -3,6 +3,7 @@ import { DbService } from '../db.service'
 import {SavedCoursesService} from '../saved-courses.service'
 import { MatExpansionModule }from '@angular/material/expansion';
 import { CommonModule } from '@angular/common';
+import { timeout } from 'rxjs/operators';
 
 
 @Component({
@@ -11,6 +12,8 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./schedules.component.scss']
 })
 export class SchedulesComponent implements OnInit {
+
+  looper :boolean = true;
 
   //editing schedule
   editing: any;
@@ -53,7 +56,6 @@ export class SchedulesComponent implements OnInit {
     }, error=> {
       alert(error.error)
     })
-    this.displaySchedules();
   }
 
   editChangeVisibility(){
