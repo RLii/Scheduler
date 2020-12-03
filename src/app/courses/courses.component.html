@@ -1,6 +1,7 @@
 <app-saved-courses [savedCourses]="savedCourses"></app-saved-courses>
 
 <div *ngIf="reviewedCourse">
+    <button (click)="displayCourses()">Return to schedules</button>
     <h3>Write a review</h3>
     <p>What do you have to say about this course?</p>
     <input [(ngModel)] = "review">

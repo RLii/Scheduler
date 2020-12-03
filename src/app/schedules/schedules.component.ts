@@ -4,6 +4,7 @@ import {SavedCoursesService} from '../saved-courses.service'
 import { MatExpansionModule }from '@angular/material/expansion';
 import { CommonModule } from '@angular/common';
 import { timeout } from 'rxjs/operators';
+import { LocalStorageService }from '../local-storage.service';
 
 
 @Component({
@@ -44,7 +45,8 @@ export class SchedulesComponent implements OnInit {
   days: any[] =[];
 
   constructor(private db: DbService,
-              private scService: SavedCoursesService) {this.isPublic = false , this.description = ""}
+              private scService: SavedCoursesService,
+              private ls: LocalStorageService) {this.isPublic = false , this.description = ""}
 
   ngOnInit(): void {
     this.displaySchedules();
@@ -56,6 +58,7 @@ export class SchedulesComponent implements OnInit {
     }, error=> {
       alert(error.error)
     })
+    this.oldScheduleName = this.editing.schedule_name;
   }
 
   editChangeVisibility(){
@@ -99,7 +102,17 @@ export class SchedulesComponent implements OnInit {
   displaySchedules(){
     this.db.getSchedules().subscribe(data => {
       this.results = data
-      this.results = this.results.result
+      this.results = this.results.result.filter(x=> x.email == this.ls.getLog())
+      let length = this.results.length;
+      for (let i = 1; i < length; i++) {
+      let key = this.results[i];
+      let j = i - 1;
+      while (j >= 0 && this.results[j].last_edit.replace(/\D/g, '') < key.last_edit.replace(/\D/g, '')) {
+        this.results[j + 1] = this.results[j];
+          j = j - 1;
+      }
+      this.results[j + 1] = key;
+      }
   })
   this.timetable = undefined;
   this.editing = undefined;
@@ -115,14 +128,6 @@ export class SchedulesComponent implements OnInit {
     });
   }
 
-  deleteSchedules(){
-  this.db.deleteAllSchedules().subscribe(data =>{
-    alert(data)
-    this.displaySchedules();
-  }, error => {
-    alert(error.error)
-  });
-  }
 
   deleteSchedule(){
     this.db.deleteASchedule(this.deleteScheduleName).subscribe(data =>{
@@ -173,7 +178,7 @@ export class SchedulesComponent implements OnInit {
       this.timetableSchName = sch.schedule_name;
       this.temp = data;
       this.temp = this.temp.result;
-      if(this.temp[0].components != undefined)
+      if(this.temp[0].components.length >0)
       {
       this.courseCodes = this.temp[0].course_codes;
       this.subjects = this.temp[0].subjects;

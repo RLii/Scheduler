@@ -54,18 +54,19 @@ export class DemoSchedulesComponent implements OnInit {
     this.db.getSchedules().subscribe(data => {
       this.results = data
       this.results = this.results.result.filter(x=> x.public == true)
+      
+      let length = this.results.length;
+      for (let i = 1; i < length; i++) {
+      let key = this.results[i];
+      let j = i - 1;
+      while (j >= 0 && this.results[j].last_edit.replace(/\D/g, '') < key.last_edit.replace(/\D/g, '')) {
+        this.results[j + 1] = this.results[j];
+          j = j - 1;
+      }
+      this.results[j + 1] = key;
+      }
       if(this.results.length > 10)
       {
-        let length = this.results.length;
-        for (let i = 1; i < length; i++) {
-        let key = this.results[i];
-        let j = i - 1;
-        while (j >= 0 && this.results[j].last_edit.replace(/\D/g, '') > key.last_edit.replace(/\D/g, '')) {
-          this.results[j + 1] = this.results[j];
-            j = j - 1;
-        }
-        this.results[j + 1] = key;
-        }
         while(this.results.length > 10)
         {
           this.results.pop();
@@ -140,7 +141,7 @@ export class DemoSchedulesComponent implements OnInit {
       this.timetableSchName = sch.schedule_name;
       this.temp = data;
       this.temp = this.temp.result;
-      if(this.temp[0].components != undefined)
+      if(this.temp[0].components.length >0)
       {
       this.courseCodes = this.temp[0].course_codes;
       this.subjects = this.temp[0].subjects;
@@ -153,7 +154,6 @@ export class DemoSchedulesComponent implements OnInit {
           this.startTimes.push(this.temp[0].start_time);
           this.endTimes.push(this.temp[0].end_time);
           this.days.push(this.temp[0].days);
-          console.log(this.days.length)
           if(this.days.length == this.components.length)
           {
             this.timetable = []

@@ -125,6 +125,8 @@ app.post('/api/schedules', (req, res)=>{
     //Sanitizing body
     req.body.schedule_name = sanitize(req.body.schedule_name);
 
+    var username = dbUsers.filter(x=>x.email == req.body.email)[0].name
+
     if(dbSchedule.filter(element => element.email == req.body.email).length >20)
     {
         res.status(400).send("You already have 20 course lists made. Please delete some to create more");
@@ -139,6 +141,10 @@ app.post('/api/schedules', (req, res)=>{
                  "public" : req.body.public,
                  "email" : req.body.email,
                  "description":req.body.description,
+                 "username" : username,
+                 "subjects" : [],
+                 "course_codes" : [],
+                 "components": [],
                  "last_edit": dateTime})
           .write()
         res.status(200).send("Written.")
@@ -245,7 +251,7 @@ app.delete('/api/schedule', (req, res)=> {
     }
 })
 
-//************************************Functionality 8*
+//************************************Functionality 8*//show all schedules
 app.get('/api/schedules', (req, res)=> {
     let resultJson = {};
     let result = [];
@@ -259,6 +265,7 @@ app.get('/api/schedules', (req, res)=> {
                 "public": dbSchedule[x].public,
                 "subjects" : dbSchedule[x].subjects,
                 "components" : dbSchedule[x].components,
+                "username" : dbSchedule[x].username,
                 "course_codes": dbSchedule[x].course_codes,
                 "last_edit": dbSchedule[x].last_edit,
                 "description" : dbSchedule[x].description,
@@ -272,10 +279,8 @@ app.get('/api/schedules', (req, res)=> {
                 "last_edit": dbSchedule[x].last_edit,
                 "public": dbSchedule[x].public,
                 "email" : dbSchedule[x].email,
+                "username" : dbSchedule[x].username,
                 "description" : dbSchedule[x].description,
-                "course_codes": "empty",
-                "subjects" : "empty",
-                "components" : "empty",
                 "num_of_courses": 0
             }
         }
@@ -285,14 +290,6 @@ app.get('/api/schedules', (req, res)=> {
     res.send(resultJson)
 })
 
-//*************************************Functionality 9*
-app.delete('/api/schedules', (req, res)=> {
-    db.get('schedules')
-      .remove({})
-      .write()
-    
-    res.send("Deleted.")
-})
 
 //Add new user to the database
 app.post('/api/users', (req, res) => {

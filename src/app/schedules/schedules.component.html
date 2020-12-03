@@ -45,8 +45,6 @@
 <br>
 <button (click)="deleteSchedule()">Delete a Schedule Named: </button>
 <input [(ngModel)] ="deleteScheduleName">
-<br>
-<button (click)="deleteSchedules()">Delete All Schedules</button>
 
 
     <h3>All Schedules</h3>
@@ -59,7 +57,7 @@
                 <mat-panel-description>
                     <span>Schedule Name: {{sch.schedule_name}} </span>
                     <br>
-                    <span>Schedule Creator: {{sch.email}} </span>
+                    <span>Schedule Creator: {{sch.username}} </span>
                     <br>
                     <span>Number of courses: {{sch.num_of_courses}} </span>
                     <br>

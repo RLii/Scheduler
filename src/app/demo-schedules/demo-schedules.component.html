@@ -39,19 +39,26 @@
         <mat-expansion-panel hideToggle>
             <mat-expansion-panel-header [expandedHeight]="'190px'" [collapsedHeight]="'190px'">
                 <mat-panel-description>
-                    <span>Schedule Name: {{sch.schedule_name}} </span>
-                    <br>
-                    <span>Schedule Creator: {{sch.email}} </span>
-                    <br>
-                    <span>Number of courses: {{sch.num_of_courses}} </span>
-                    <br>
-                    <button class="schBtns" (click)="openTimeTable(sch)">Open Timetable</button>
+                    <p>
+                        Schedule Name: {{sch.schedule_name}}
+                        <br>
+                        Schedule Creator: {{sch.username}}
+                        <br>
+                        Number of courses: {{sch.num_of_courses}}
+                        <br>
+                        <button class="schBtns" (click)="openTimeTable(sch)">Open Timetable</button>
+                    </p>
                 </mat-panel-description>
             </mat-expansion-panel-header>
+            <p>
             Subjects: {{sch.subjects}}
+            <br>
             Courses: {{sch.course_codes}}
+            <br>
             Components: {{sch.components}}
+            <br>
             Description: {{sch.description}}
+            </p>
         </mat-expansion-panel>
     </mat-accordion>
 </div>
