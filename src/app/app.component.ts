@@ -11,14 +11,14 @@ import { Router } from '@angular/router';
 })
 export class AppComponent {
   login: boolean;
+  admin: boolean;
   title = 'Scheduler';
-  constructor(private db :DbService, private ls: LocalStorageService, private router: Router){this.login = false}
+  constructor(private db :DbService, private ls: LocalStorageService, private router: Router){this.login = false, this.admin = false}
   verifyCourse() {
     this.db.verifyUser().subscribe(data =>{
       var results: any = data
       this.ls.setLog(results.email);
       this.router.navigateByUrl("courses")
-      alert(this.ls.getLog());
     })
   }
   verifySchedule(){
@@ -26,10 +26,17 @@ export class AppComponent {
       var results: any = data
       this.ls.setLog(results.email);
       this.router.navigateByUrl("schedules")
-      alert(this.ls.getLog());
+    })
+  }
+  verifyAdmin(){
+    this.db.verifyUser().subscribe(data =>{
+      var results: any = data
+      this.ls.setLog(results.email);
+      this.router.navigateByUrl("admin")
     })
   }
   NewLogin(){
     this.login = true;
+    this.admin = this.ls.isAdmin();
   }
 }

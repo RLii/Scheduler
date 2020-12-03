@@ -16,6 +16,7 @@ import { DemoCoursesComponent } from './demo-courses/demo-courses.component';
 import { DemoSchedulesComponent } from './demo-schedules/demo-schedules.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatExpansionModule} from '@angular/material/expansion';
+import { AdminComponent } from './admin/admin.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -25,10 +26,11 @@ import { MatExpansionModule} from '@angular/material/expansion';
     DashboardComponent,
     MainComponent,
     RegisterComponent,
+    DemoSchedulesComponent,
     DemoCoursesComponent,
-    DemoSchedulesComponent
+    AdminComponent
   ],
-  imports: [
+  imports: [ 
     BrowserModule,
     AppRoutingModule,
     FormsModule,

@@ -147,6 +147,9 @@ export class SchedulesComponent implements OnInit {
           this.components.push(c.component)
           if(this.components.length == this.savedCourses.length)
           {
+            this.editing.subjects = this.subjects
+            this.editing.course_codes = this.courseCodes
+            this.editing.components = this.components
             this.db.putCoursesIntoSchedule(schedule.schedule_name, this.subjects,this.courseCodes,this.components).subscribe(data =>{
               alert(data)
               this.resetVariables()

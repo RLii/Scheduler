@@ -67,10 +67,18 @@
                     <button class="schBtns" (click)="editSchedule(sch)">Edit Schedule</button>
                 </mat-panel-description>
             </mat-expansion-panel-header>
-            Subjects: {{sch.subjects}}
-            Courses: {{sch.course_codes}}
-            Components: {{sch.components}}
-            Description: {{sch.description}}
+            Classes
+            <br>
+            <p class="classes" *ngFor="let x of sch.subjects; let i = index">
+                Subject: {{sch.subjects[i]}}
+                <br>
+                Course Code: {{sch.course_codes[i]}}
+                <br>
+                Component: {{sch.components[i]}}
+            </p>
+            <p>
+                Schedule Description: {{sch.description}}
+            </p>
         </mat-expansion-panel>
     </mat-accordion>
 </div>

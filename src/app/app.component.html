@@ -2,9 +2,13 @@
 <h1>{{title}}</h1>
 <div *ngIf="login">
     <nav>
-        <a routerLink="/main">Login</a>
         <a (click) = "verifyCourse()" >Courses</a>
         <a (click) = "verifySchedule()" >Schedules</a>
+    </nav>
+</div>
+<div *ngIf="admin">
+    <nav>
+        <a (click) ="verifyAdmin()"> SUPER SECRET!!!!</a>
     </nav>
 </div>
 

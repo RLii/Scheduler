@@ -30,3 +30,23 @@ export class AuthGuard implements CanActivate{
     }
   }
 }
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AdminGuard implements CanActivate{
+
+  constructor(private router: Router, private authService: AuthService, private ls : LocalStorageService){}
+
+  canActivate(){
+    if(this.ls.isAdmin())
+    {
+      return true;
+    }
+    else
+    {
+      this.router.navigateByUrl("main");
+      return false;
+    }
+  }
+}

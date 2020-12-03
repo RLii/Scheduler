@@ -1,7 +1,7 @@
 
-<h2>Courses</h2>
 
 <div *ngIf="results">
+    <h2>Courses</h2>
     <p>Search By Subject</p>
     <input [(ngModel)] = "searchBySubject">
     <br>
@@ -43,12 +43,24 @@
                 End Time: {{course.end_time}}
                 <br>
                 Days: {{course.days}}
-                <br>
+                <br> 
             </mat-panel-description>
         </mat-expansion-panel-header>
-        Campus Location: {{course.campus}}
-        <br>
-        Course Description: {{course.description}}
+        <div class="reviews">
+            Reviews
+            <p *ngFor="let x of course.review">
+                User: {{x.user}}
+                <br>
+                {{x.content}}
+                <br>
+                Date: {{x.date}}
+            </p>
+        </div>
+        <p>
+            Campus Location: {{course.campus}}
+            <br>
+            Course Description: {{course.description}}
+        </p>
     </mat-expansion-panel>
 </mat-accordion>
 </div>

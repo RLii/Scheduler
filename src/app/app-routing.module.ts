@@ -4,7 +4,8 @@ import { CoursesComponent } from './courses/courses.component';
 import { MainComponent } from './main/main.component';
 import { RegisterComponent } from './register/register.component';
 import { SchedulesComponent } from './schedules/schedules.component';
-import { AuthGuard } from './auth.service';
+import { AuthGuard, AdminGuard } from './auth.service';
+import { AdminComponent } from './admin/admin.component';
 
 
 const routes: Routes = [
@@ -12,7 +13,8 @@ const routes: Routes = [
   {path: 'courses', component: CoursesComponent/*, canActivate: [AuthGuard]*/},
   {path: 'main', component: MainComponent},
   {path: 'register', component: RegisterComponent},
-  {path: '', redirectTo:'main',pathMatch: 'full'}
+  {path: '', redirectTo:'main',pathMatch: 'full'},
+  {path: 'admin', component: AdminComponent/*, canActivate: [AdminGuard]*/}
 ];
 
 @NgModule({

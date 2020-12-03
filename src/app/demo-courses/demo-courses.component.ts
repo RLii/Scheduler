@@ -10,6 +10,7 @@ import { MatExpansionModule }from '@angular/material/expansion';
 })
 export class DemoCoursesComponent implements OnInit {
 
+
   results: any;
 
   //Searches
@@ -35,6 +36,9 @@ export class DemoCoursesComponent implements OnInit {
     this.searchByKeyword="";
     this.displayCourses();
   }
+
+
+
 
   //Search Functions
   filterResultsBySubject(results:any){

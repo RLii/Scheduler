@@ -6,8 +6,9 @@ import { Injectable } from '@angular/core';
 export class LocalStorageService {
   token: string;
   loggedIn: string;
+  admin: boolean;
 
-  constructor() {this.token = "", this.loggedIn = undefined }
+  constructor() {this.token = "", this.loggedIn = undefined, this.admin = false }
 
   setToken(token: string){
     this.token = token;
@@ -20,5 +21,11 @@ export class LocalStorageService {
   }
   getLog(){
     return this.loggedIn;
+  }
+  adminTrue(){
+    this.admin = true;
+  }
+  isAdmin(){
+    return this.admin;
   }
 }

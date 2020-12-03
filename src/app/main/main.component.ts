@@ -39,10 +39,20 @@ export class MainComponent implements OnInit {
   login(){
     this.db.userLogin(this.email, this.password).subscribe(data => {
       this.ls.setToken(data);
-      this.a.NewLogin();
-      alert("Logged in!");
+      this.db.verifyUser().subscribe(data =>{
+        var results: any = data
+        this.ls.setLog(results.email);
+        if(results.admin==true)
+        {
+          this.ls.adminTrue();
+        }
+        alert("Logged in!");
+        this.router.navigateByUrl('courses');
+        this.a.NewLogin();
+      })
     }, error => {
       alert(error.error);
     })
   }
+  
 }

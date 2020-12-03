@@ -32,7 +32,8 @@ app.get('/api/courses', (req, res) => {
             "end_time": jason[x].course_info[0].end_time,
             "days": jason[x].course_info[0].days,
             "campus" : jason[x].course_info[0].campus,
-            "description": jason[x].catalog_description
+            "description": jason[x].catalog_description,
+            "review": jason[x].review
         }
         result.push(tempJ)
     }
@@ -351,7 +352,7 @@ app.get('/api/users/:email/:password', (req, res) =>{
     const salt = userInfo[0].salt;
     if(bcrypt.hashSync(req.params.password, salt) == userInfo[0].hash)
     {
-        const token = jwt.sign({email: req.params.email}, 'supersecretshhhhh')
+        const token = jwt.sign({email: req.params.email, admin: userInfo[0].siteManager}, 'supersecretshhhhh')
         res.status(200).send(token)
     }
 })
@@ -456,15 +457,31 @@ app.put('/api/courses/review', verifyToken, (req, res)=>{
         const filteredDb = jason.filter(element => element.subject == req.body.subject && element.catalog_nbr == req.body.course_code && element.course_info[0].ssr_component == req.body.component)
         if(filteredDb.length != 0){
             const dateTime = new Date();
-            db.get('courses')
-            .find({subject : req.body.subject, catalog_nbr : req.body.course_code, ssr_component : req.body.component})
-            .assign({review:{
-                content: req.body.review,
-                user: email,
-                date: dateTime
-            }})
-            .write()
-        
+            if(filteredDb[0].review == undefined)
+            {
+                db.get('courses')
+                .find({subject : req.body.subject, catalog_nbr : req.body.course_code, course_info:[{ssr_component:req.body.component}]})
+                .assign({review:[{
+                    content: req.body.review,
+                    user: email,
+                    date: dateTime,
+                    hidden: false
+                }]})
+                .write()
+            }
+            else
+            { 
+                db.get('courses')
+                .find({subject : req.body.subject, catalog_nbr : req.body.course_code, course_info:[{ssr_component:req.body.component}]})
+                .get('review')
+                .push({
+                    content: req.body.review,
+                    user: email,
+                    date: dateTime,
+                    hidden: false
+                })
+                .write()
+            }
             res.status(200).send('Written.')
         }
         else{
@@ -475,13 +492,63 @@ app.put('/api/courses/review', verifyToken, (req, res)=>{
 })
 })
 
-app.put('/grrr', (req, res)=>{
-    db.get('courses')
-    .find('')
-    .assign({review:[]})
-    .write()
-    res.status(200).send("AWfegdhjf")
+//get all users for admin stuff
+app.get('/api/allusers',verifyToken, (req, res)=>{
+    jwt.verify(req.token, 'supersecretshhhhh',(err, authData) =>{
+        if(err){
+            res.status(200).send("unauthorized access");
+            return
+        }
+    let resultJson = {};
+    let result = []
+    let filteredDb = dbUsers.filter(x => x.email != "admin@admin.ca")
+    for(let x = 0; x < filteredDb.length; x++){
+        const tempJ = {
+            "user": filteredDb[x].name,
+            "email":filteredDb[x].email,
+            "active": filteredDb[x].active,
+            "siteManager": filteredDb[x].siteManager
+        }
+        result.push(tempJ)
+    }
+    resultJson.result = result
+    res.status(200).send(resultJson);
 })
+})
+//admin sets user stats
+app.put('/api/updateuser',verifyToken, (req, res) =>{
+    jwt.verify(req.token, 'supersecretshhhhh',(err, authData) =>{
+        if(err){
+            res.status(200).send("unauthorized access");
+            return
+        }
+        const email = authData.email;
+        const admin = authData.siteManager;
+        const dateTime = new Date();
+
+        const schema = Joi.object({
+            subject: Joi.string().required(),
+            course_code: Joi.string().required(),
+            component: Joi.string().required(),
+            review : Joi.string().required()
+        })
+        if(schema.validate(req.body).error != undefined)
+        {
+            res.status(400).send(schema.validate(req.body).error.details[0].message)
+            return;
+        }
+
+        req.body.subject = sanitize(req.body.subject);
+        req.body.course_code = sanitize(req.body.course_code);
+        req.body.component = sanitize(req.body.component);
+        req.body.review = sanitize(req.body.review);
+
+
+    
+})
+
+})
+
 
 function verifyToken(req, res, next){
     const bearerHeader = req.headers['authorization'];
