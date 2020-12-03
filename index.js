@@ -523,25 +523,64 @@ app.put('/api/updateuser',verifyToken, (req, res) =>{
             return
         }
         const email = authData.email;
-        const admin = authData.siteManager;
         const dateTime = new Date();
 
         const schema = Joi.object({
-            subject: Joi.string().required(),
-            course_code: Joi.string().required(),
-            component: Joi.string().required(),
-            review : Joi.string().required()
+            account_email: Joi.string().required(),
+            reason: Joi.string().required()
         })
         if(schema.validate(req.body).error != undefined)
         {
             res.status(400).send(schema.validate(req.body).error.details[0].message)
             return;
         }
+        req.body.account_email = sanitize(req.body.account_email)
+        req.body.reason = sanitize(req.body.reason);
 
-        req.body.subject = sanitize(req.body.subject);
-        req.body.course_code = sanitize(req.body.course_code);
-        req.body.component = sanitize(req.body.component);
-        req.body.review = sanitize(req.body.review);
+
+        if(req.body.reason == "editmanager")
+        {
+            if(email != "admin@admin.ca")
+            {
+                res.status(400).send("You are incapable of editing this...")
+            }
+            if(dbUsers.filter(x=>x.email == account_email)[0].siteManager == true)
+            {
+                db.get('users')
+                .find({email: account_email})
+                .assign({siteManager: false})
+                .write()
+            }
+            else
+            {
+                db.get('users')
+                .find({email: account_email})
+                .assign({siteManager: true})
+                .write()
+            }
+        }
+        else if(req.body.reason =="editactive")
+        {
+            if(dbUsers.filter(x=>x.email == account_email)[0].active == true)
+            {
+                db.get('users')
+                .find({email: account_email})
+                .assign({active: false})
+                .write()
+            }
+            else
+            {
+                db.get('users')
+                .find({email: account_email})
+                .assign({active: true})
+                .write()
+            }
+        }
+        else
+        {
+            res.status(400).send("No purpose here...");
+        }
+        res.status(200).send("success")
 
 
     

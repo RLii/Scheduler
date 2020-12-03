@@ -3,6 +3,7 @@ import { Observable, of } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, map, tap } from 'rxjs/operators';
 import { LocalStorageService } from './local-storage.service';
+import { EmailValidator } from '@angular/forms';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,20 @@ export class DbService {
 
   constructor(private http: HttpClient, private ls: LocalStorageService) { }
 
+  updateUsers(email: string, reason: string){
+    var temp = "bearer "+this.ls.getToken();
+    return this.http.put('/api/updateuser',{
+      account_email: email,
+      reason: reason
+
+    },{headers: new HttpHeaders({"authorization" : temp}), responseType:'text'})
+    
+  }
+
+  getUsers(){
+    var temp = "bearer "+this.ls.getToken();
+    return this.http.get('/api/allusers',{headers: new HttpHeaders({"authorization" : temp})})
+  }
 
   getReviews(subject:string, code: string, component:string){
     return this.http.get('/api/courses/review'+subject+'/'+code+'/'+component)
@@ -39,8 +54,7 @@ export class DbService {
             course_codes: json.course_codes,
             components: json.components
     },
-    {headers: new HttpHeaders({"authorization" : temp,
-    }  ),responseType:"text"})
+    {headers: new HttpHeaders({"authorization" : temp}),responseType:"text"})
   }
 
   verifyUser(){

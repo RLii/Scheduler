@@ -1,1 +1,14 @@
-<p>admin works!</p>
+<div *ngIf="users">
+    <h3>Users</h3>
+    <p class="users" *ngFor="let x of users">
+        Username : {{x.user}}
+        <br>
+        Email : {{x.email}}
+        <br>
+        Is active : {{x.active}}
+        <br>
+        Is a site manager : {{x.siteManager}}
+        <button (click) = "changeActiveStatus(x)">Change active status</button>
+        <button (click) = "changeManagerStatus(x)">Change site manager status</button>
+    </p>
+</div>
