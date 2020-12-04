@@ -12,12 +12,24 @@ export class DbService {
 
   constructor(private http: HttpClient, private ls: LocalStorageService) { }
 
+  getAdminReviews(){
+    var temp = "bearer "+this.ls.getToken();
+    return this.http.get('/api/reviews',{headers: new HttpHeaders({"authorization" : temp})})
+  }
+  changeReviewStatus(content: string, user: string, date:string){
+    var temp = "bearer "+this.ls.getToken();
+    return this.http.put('/api/updatereview',{
+      content: content,
+      user: user,
+      date: date
+    },{headers: new HttpHeaders({"authorization" : temp}),responseType:'text'})
+  }
+
   updateUsers(email: string, reason: string){
     var temp = "bearer "+this.ls.getToken();
     return this.http.put('/api/updateuser',{
-      account_email: email,
-      reason: reason
-
+      reason: reason,
+      account_email: email
     },{headers: new HttpHeaders({"authorization" : temp}), responseType:'text'})
     
   }

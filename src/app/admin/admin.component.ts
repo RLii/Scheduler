@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { Local } from 'protractor/built/driverProviders';
 import { DbService } from '../db.service';
+import { LocalStorageService }from '../local-storage.service';
 @Component({
   selector: 'app-admin',
   templateUrl: './admin.component.html',
@@ -8,22 +10,43 @@ import { DbService } from '../db.service';
 export class AdminComponent implements OnInit {
 
   users:any;
+  reviews:any;
 
-  constructor(private db : DbService) { }
+  constructor(private db : DbService, private ls:LocalStorageService) { }
 
   ngOnInit(): void {
     this.displayUsers()
+    this.displayReviews()
+  }
+
+  displayReviews(){
+    this.db.getAdminReviews().subscribe(data =>{
+      this.reviews = data
+      this.reviews = this.reviews.result
+    },error =>{
+      alert(error.error)
+    })
+  }
+
+  changeHiddenStatus(review: any){
+    this.db.changeReviewStatus(review.content, review.user, review.date).subscribe(data =>{
+      alert(data)
+      this.displayReviews();
+    },error =>{
+      alert(error.error)
+    })
   }
 
   displayUsers(){
     this.db.getUsers().subscribe(data =>{
       this.users = data
-      this.users = this.users.result
+      this.users = this.users.result.filter(x => x.email != this.ls.getLog())
     })
   }
 
   changeManagerStatus(user){
-    this.db.updateUsers(user.email, "editmanager").subscribe(data=>{
+    var email = user.email
+    this.db.updateUsers(email, "editmanager").subscribe(data=>{
       alert(data)
       this.displayUsers();
     },error=>{
@@ -31,7 +54,8 @@ export class AdminComponent implements OnInit {
     })
   }
   changeActiveStatus(user){
-    this.db.updateUsers(user.email, "editactive").subscribe(data=>{
+    var email = user.email
+    this.db.updateUsers(email, "editactive").subscribe(data=>{
       alert(data)
       this.displayUsers();
     },error=>{

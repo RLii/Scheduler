@@ -48,13 +48,15 @@
         </mat-expansion-panel-header>
         <div class="reviews">
             Reviews
-            <p *ngFor="let x of course.review">
-                User: {{x.user}}
-                <br>
-                {{x.content}}
-                <br>
-                Date: {{x.date}}
-            </p>
+            <ng-container *ngFor="let x of course.review">
+                <p *ngIf="!x.hidden">
+                        User: {{x.user}}
+                        <br>
+                        {{x.content}}
+                        <br>
+                        Date: {{x.date}}
+                </p>
+            </ng-container>
         </div>
         <p>
             Campus Location: {{course.campus}}

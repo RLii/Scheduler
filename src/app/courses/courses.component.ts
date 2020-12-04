@@ -53,6 +53,7 @@ export class CoursesComponent implements OnInit {
   saveReview(){
     this.db.writeReview(this.reviewedCourse.subject, this.reviewedCourse.course_code, this.reviewedCourse.component, this.review).subscribe(data =>{
       alert(data)
+      this.displayCourses();
     },error=>{
       alert(error.error)
     })

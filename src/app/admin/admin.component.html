@@ -12,3 +12,16 @@
         <button (click) = "changeManagerStatus(x)">Change site manager status</button>
     </p>
 </div>
+<div *ngIf="reviews">
+    <h3>Reviews</h3>
+    <p class="users" *ngFor="let x of reviews">
+        Username : {{x.user}}
+        <br>
+        Content : {{x.content}}
+        <br>
+        Date : {{x.date}}
+        <br>
+        Hidden Status : {{x.hidden}}
+        <button (click) = "changeHiddenStatus(x)">Change active status</button>
+    </p>
+</div>

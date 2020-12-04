@@ -484,6 +484,8 @@ app.put('/api/courses/review', verifyToken, (req, res)=>{
         req.body.component = sanitize(req.body.component);
         req.body.review = sanitize(req.body.review);
 
+        let username = dbUsers.filter(x => x.email == email)[0].name;
+
         const filteredDb = jason.filter(element => element.subject == req.body.subject && element.catalog_nbr == req.body.course_code && element.course_info[0].ssr_component == req.body.component)
         if(filteredDb.length != 0){
             const dateTime = new Date();
@@ -493,7 +495,7 @@ app.put('/api/courses/review', verifyToken, (req, res)=>{
                 .find({subject : req.body.subject, catalog_nbr : req.body.course_code, course_info:[{ssr_component:req.body.component}]})
                 .assign({review:[{
                     content: req.body.review,
-                    user: email,
+                    user: username,
                     date: dateTime,
                     hidden: false
                 }]})
@@ -506,7 +508,7 @@ app.put('/api/courses/review', verifyToken, (req, res)=>{
                 .get('review')
                 .push({
                     content: req.body.review,
-                    user: email,
+                    user: username,
                     date: dateTime,
                     hidden: false
                 })
@@ -529,7 +531,8 @@ app.get('/api/allusers',verifyToken, (req, res)=>{
             res.status(200).send("unauthorized access");
             return
         }
-        if(authData.admin){
+        if(authData.admin == false){
+            console.log("?")
             res.status(200).send("unauthorized access");
             return
         }
@@ -578,34 +581,34 @@ app.put('/api/updateuser',verifyToken, (req, res) =>{
             {
                 res.status(400).send("You are incapable of editing this...")
             }
-            if(dbUsers.filter(x=>x.email == account_email)[0].siteManager == true)
+            if(dbUsers.filter(x=>x.email == req.body.account_email)[0].siteManager == true)
             {
                 db.get('users')
-                .find({email: account_email})
+                .find({email: req.body.account_email})
                 .assign({siteManager: false})
                 .write()
             }
             else
             {
                 db.get('users')
-                .find({email: account_email})
+                .find({email: req.body.account_email})
                 .assign({siteManager: true})
                 .write()
             }
         }
         else if(req.body.reason =="editactive")
         {
-            if(dbUsers.filter(x=>x.email == account_email)[0].active == true)
+            if(dbUsers.filter(x=>x.email == req.body.account_email)[0].active == true)
             {
                 db.get('users')
-                .find({email: account_email})
+                .find({email: req.body.account_email})
                 .assign({active: false})
                 .write()
             }
             else
             {
                 db.get('users')
-                .find({email: account_email})
+                .find({email: req.body.account_email})
                 .assign({active: true})
                 .write()
             }
@@ -614,6 +617,109 @@ app.put('/api/updateuser',verifyToken, (req, res) =>{
         {
             res.status(400).send("No purpose here...");
         }
+        res.status(200).send("success")
+
+
+    
+})
+
+})
+
+//get all reviews
+app.get('/api/reviews',verifyToken, (req, res)=> {
+    jwt.verify(req.token, 'supersecretshhhhh',(err, authData) =>{
+        if(err){
+            res.status(200).send("unauthorized access");
+            return
+        }
+        if(authData.admin == false){
+            console.log("?")
+            res.status(200).send("unauthorized access");
+            return
+        }
+    let resultJson = {};
+    let result = []
+    let filteredDb = db.get('courses').value().filter(x => x.review !== undefined)
+    for(let x = 0; x < filteredDb.length; x++){
+        for(let y = 0; y < filteredDb[x].review.length;y++)
+        {
+            const tempJ = {
+                "content": filteredDb[x].review[y].content,
+                "user":filteredDb[x].review[y].user,
+                "date": filteredDb[x].review[y].date,
+                "hidden" : filteredDb[x].review[y].hidden
+            }
+            result.push(tempJ)
+        }
+    }
+    resultJson.result = result
+    res.status(200).send(resultJson);
+})
+})
+//admin sets review hidden or not
+app.put('/api/updatereview',verifyToken, (req, res) =>{
+    jwt.verify(req.token, 'supersecretshhhhh',(err, authData) =>{
+        if(err){
+            res.status(200).send("unauthorized access");
+            return
+        }
+        const email = authData.email;
+        const dateTime = new Date();
+
+        const schema = Joi.object({
+            content: Joi.string().required(),
+            user: Joi.string().required(),
+            date: Joi.string().required()
+        })
+        if(schema.validate(req.body).error != undefined)
+        {
+            res.status(400).send(schema.validate(req.body).error.details[0].message)
+            return;
+        }
+        req.body.content = sanitize(req.body.content);
+        req.body.user = sanitize(req.body.user);
+        req.body.date = sanitize(req.body.date)
+
+
+        if(authData.admin)
+        {
+            const hiddenValue = db.get('courses')
+            .find({review:[{content:req.body.content,
+                            user: req.body.user,
+                            date : req.body.date}]})
+            .get('review')
+            .find({date:req.body.date})
+            .get('hidden')
+            .value()
+            
+            if(hiddenValue == false)
+            {
+                db.get('courses')
+                .find({review:[{content:req.body.content,
+                                user: req.body.user,
+                                date : req.body.date}]})
+                .get('review')
+                .find({date:req.body.date})
+                .assign({hidden:true})
+                .write()
+            }
+            else
+            {
+                db.get('courses')
+                .find({review:[{content:req.body.content,
+                                user: req.body.user,
+                                date : req.body.date}]})
+                .get('review')
+                .find({date:req.body.date})
+                .assign({hidden:false})
+                .write()
+            }
+        }
+        else
+        {
+            res.status(400).send("unauthorized access")
+        }
+        
         res.status(200).send("success")
 
 

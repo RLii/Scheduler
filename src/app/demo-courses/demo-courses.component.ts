@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DbService } from '../db.service';
 import { SavedCoursesService } from '../saved-courses.service'
 import { MatExpansionModule }from '@angular/material/expansion';
-
+import { CommonModule }from '@angular/common';
 @Component({
   selector: 'app-demo-courses',
   templateUrl: './demo-courses.component.html',
