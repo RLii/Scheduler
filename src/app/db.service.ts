@@ -13,6 +13,13 @@ export class DbService {
 
   constructor(private http: HttpClient, private ls: LocalStorageService) { }
 
+  takedownRequest(content:string, user:string, date: string, reason:string){
+    return this.http.post('/api/addTakedownReq',{
+      
+    },{responseType:'text'})
+  }
+    
+
   updatePassword(email:string, newpass:string, oldpass:string){
     return this.http.put('/api/users/updatePassword', {
       email: email,

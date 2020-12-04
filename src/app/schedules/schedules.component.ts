@@ -6,13 +6,15 @@ import { CommonModule } from '@angular/common';
 import { timeout } from 'rxjs/operators';
 import { LocalStorageService }from '../local-storage.service';
 
-
+ 
 @Component({
   selector: 'app-schedules',
   templateUrl: './schedules.component.html',
   styleUrls: ['./schedules.component.scss']
 })
 export class SchedulesComponent implements OnInit {
+
+  showOwnedSchedules:boolean=false;
 
   looper :boolean = true;
 
@@ -50,6 +52,23 @@ export class SchedulesComponent implements OnInit {
 
   ngOnInit(): void {
     this.displaySchedules();
+  }
+  filterSchedules(sch){
+    if(this.showOwnedSchedules)
+    {
+      return sch.filter(x=> x.email == this.ls.getLog())
+    }
+    else{return sch}
+  }
+
+  switchShowing(){
+    if(this.showOwnedSchedules == false)
+    {
+      this.showOwnedSchedules = true;
+    }
+    else{
+      this.showOwnedSchedules = false;
+    }
   }
 
   editSave(){

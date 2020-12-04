@@ -48,10 +48,11 @@
 
 
     <h3>All Schedules</h3>
+    <button (click) ="switchShowing()">Show only owned schedules {{showOwnedSchedules}}</button>
     <div *ngIf="results.length ==0">
         <p>There are no schedules made</p>
     </div>
-    <mat-accordion class="accords"  *ngFor="let sch of results">
+    <mat-accordion class="accords"  *ngFor="let sch of filterSchedules(results)">
         <mat-expansion-panel hideToggle>
             <mat-expansion-panel-header [expandedHeight]="'190px'" [collapsedHeight]="'190px'">
                 <mat-panel-description>

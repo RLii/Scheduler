@@ -12,7 +12,6 @@ const db = lowDB(new fileSync("db.json"))
 app.use('/', express.static('dist/se3316-lab5'))
 app.use(bodyParser.json())
 
-//console.log(db.get('courses').find({catalog_nbr:"1021B"}).value())
 const jason = db.get('courses').value();
 const dbSchedule = db.get('schedules').value();
 const dbUsers = db.get('users').value();
@@ -338,6 +337,13 @@ app.post('/api/users', (req, res) => {
     req.body.email = sanitize(req.body.email);
     req.body.password = sanitize(req.body.password);
 
+    
+    if(dbUsers.filter(x => x.name == req.body.name).length != 0)
+    {
+        res.status(400).send("There is already an account with that username.");
+        return;
+    }
+
     if(dbUsers.filter(x => x.email == req.body.email).length != 0)
     {
         res.status(400).send("There is already an account with that email.");
@@ -410,7 +416,6 @@ app.put('/api/users/updatePassword', (req, res) =>{
             return;
         }
         var salt = userInfo[0].salt;
-        console.log(bcrypt.hashSync(req.body.oldpassword, salt) == userInfo[0].hash)
         if(bcrypt.hashSync(req.body.oldpassword, salt) == userInfo[0].hash)
         {
             salt = bcrypt.genSaltSync(10);
@@ -449,7 +454,6 @@ app.put('/api/schedules/edit', verifyToken, (req, res) => {
             res.status(200).send("unauthorized access");
             return
         }
-        console.log(req.body);
         const email = authData.email;
         const schema = Joi.object({
             schedule_name: Joi.string().required().max(30),
@@ -475,6 +479,11 @@ app.put('/api/schedules/edit', verifyToken, (req, res) => {
             req.body.subjects[x] = sanitize(req.body.subjects[x]);
             req.body.course_codes[x] = sanitize(req.body.course_codes[x]);
             req.body.components[x] = sanitize(req.body.components[x]);
+        }
+
+        if(dbSchedule.filter(x=> x.schedule_name == req.body.new_name).length!=0)
+        {
+            res.status(400).send("There already exists a course of this name")
         }
     
         const filteredDb = dbSchedule.filter(element => element.schedule_name == req.body.schedule_name)
@@ -580,13 +589,13 @@ app.get('/api/allusers',verifyToken, (req, res)=>{
             return
         }
         if(authData.admin == false){
-            console.log("?")
             res.status(200).send("unauthorized access");
             return
         }
     let resultJson = {};
     let result = []
     let filteredDb = dbUsers.filter(x => x.email != "admin@admin.ca")
+    console.log(dbUsers)
     for(let x = 0; x < filteredDb.length; x++){
         const tempJ = {
             "user": filteredDb[x].name,
@@ -681,7 +690,6 @@ app.get('/api/reviews',verifyToken, (req, res)=> {
             return
         }
         if(authData.admin == false){
-            console.log("?")
             res.status(200).send("unauthorized access");
             return
         }
@@ -711,6 +719,7 @@ app.put('/api/updatereview',verifyToken, (req, res) =>{
             res.status(200).send("unauthorized access");
             return
         }
+
         const email = authData.email;
         const dateTime = new Date();
 
@@ -777,16 +786,7 @@ app.put('/api/updatereview',verifyToken, (req, res) =>{
 })
 
 //get all policies
-app.get('/api/policies',verifyToken, (req, res)=> {
-    jwt.verify(req.token, 'supersecretshhhhh',(err, authData) =>{
-        if(err){
-            res.status(200).send("unauthorized access");
-            return
-        }
-        if(authData.admin == false){
-            res.status(200).send("unauthorized access");
-            return
-        }
+app.get('/api/policies', (req, res)=> {
         
         let tempJ = {
             "snp": db.get('snp').value().content,
@@ -796,7 +796,6 @@ app.get('/api/policies',verifyToken, (req, res)=> {
         
     
     res.status(200).send(tempJ);
-})
 })
 
 //admin changes a policy
@@ -877,22 +876,18 @@ app.put('/api/createpolicy',verifyToken, (req, res) =>{
 
         if(req.body.policy == "snp")
         {
-            console.log("1")
             db.get('snp')
             .assign({content : req.body.content})
             .write()
         }
         else if(req.body.policy =="aup")
         {
-            console.log("2")
-            console.log("afdsd")
             db.get('aup')
             .assign({content : req.body.content})
             .write()
         }
         else if(req.body.policy == "dmca")
         {
-            console.log("3")
             db.get('dmca')
             .assign({content : req.body.content})
             .write()
@@ -941,13 +936,12 @@ app.post('/api/addTakedownReq',(req, res)=> {
 
 function verifyToken(req, res, next){
     const bearerHeader = req.headers['authorization'];
-    console.log(req.headers)
     if(typeof bearerHeader !== 'undefined'){
         const bearer = bearerHeader.split(' ');
         const bearerToken = bearer[1];
         req.token = bearerToken;
         jwt.verify(req.token, 'supersecretshhhhh',(err, authData) =>{
-            if(dbUsers.filter(x=> x.email = authData.email).length ==0)
+            if(dbUsers.filter(x=> x.email == authData.email).length ==0)
             {
                 res.status(403).send("Please Log in before accessing this functionality")
             }
