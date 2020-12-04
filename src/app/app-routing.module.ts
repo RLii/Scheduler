@@ -7,6 +7,7 @@ import { SchedulesComponent } from './schedules/schedules.component';
 import { AuthGuard, AdminGuard } from './auth.service';
 import { AdminComponent } from './admin/admin.component';
 import { CopyrightComponent} from './copyright/copyright.component'
+import { PassResetComponent } from './pass-reset/pass-reset.component';
 
 const routes: Routes = [
   {path: 'schedules', component: SchedulesComponent/*, canActivate: [AuthGuard]*/},
@@ -15,7 +16,8 @@ const routes: Routes = [
   {path: 'register', component: RegisterComponent},
   {path: '', redirectTo:'main',pathMatch: 'full'},
   {path: 'admin', component: AdminComponent/*, canActivate: [AdminGuard]*/},
-  {path: 'copyright', component: CopyrightComponent}
+  {path: 'copyright', component: CopyrightComponent},
+  {path: 'passreset', component: PassResetComponent}
 ];
 
 @NgModule({

@@ -26,10 +26,33 @@
     </p>
 </div>
 <div *ngIf="policies">
+    <div class="borders">
     <h3>Security and Privacy policy</h3>
-    <p>{{policies.snp}}</p>
+    <p>Current Policy :<br> {{policies.snp}}</p>
+    <textarea cols="150" rows="4" [(ngModel)] = "snp"></textarea>
+    <button (click)="savesnp()">Save Edits</button>
+    <h3>Create new SnP</h3>
+    <textarea cols="150" rows="4" [(ngModel)] = "newsnp"></textarea>
+    <button (click)="createsnp()">Create New SnP</button>
+    </div>
+    <br>
+    <div class="borders">
     <h3>Acceptable Use Policy</h3>
-    <p>{{policies.aup}}</p>
+    <p>Current Policy :<br> {{policies.aup}}</p>
+    <textarea cols="150" rows="4"  [(ngModel)] = "aup"></textarea>
+    <button (click)="saveaup()">Save Edits</button>
+    <h3>Create new AUP</h3>
+    <textarea cols="150" rows="4"  [(ngModel)] = "newaup"></textarea>
+    <button (click)="createaup()">Create New AUP</button>
+    </div>
+    <br>
+    <div class="borders">
     <h3>DMCA Notic and Takedown Procedure</h3>
-    <p>{{policies.dmca}}</p>
+    <p>Current Policy :<br> {{policies.dmca}}</p>
+    <textarea cols="150" rows="4"  [(ngModel)] = "dmca"></textarea>
+    <button (click)="savedmca()">Save Edits</button>
+    <h3>Create new DMCA</h3>
+    <textarea cols="150" rows="4"  [(ngModel)] = "newdmca"></textarea>
+    <button (click)="createdmca()">Create New DMCA</button>
+    </div>
 </div>

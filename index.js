@@ -380,7 +380,55 @@ app.get('/api/users/:email/:password', (req, res) =>{
         const token = jwt.sign({email: req.params.email, admin: userInfo[0].siteManager}, 'supersecretshhhhh')
         res.status(200).send(token)
     }
+    else{
+        res.status(400)
+        return;
+    }
 })
+//reset Password
+app.put('/api/users/updatePassword', (req, res) =>{
+        const schema = Joi.object({
+            email: Joi.string().email().required().max(30),
+            newpassword: Joi.string().required().max(30),
+            oldpassword: Joi.string().required().max(30)
+        })
+        if(schema.validate(req.body).error != undefined)
+        {
+            res.status(400).send(schema.validate(req.body).error.details[0].message)
+            return;
+        }
+    
+        //Sanitizing body
+        req.body.email = sanitize(req.body.email);
+        req.body.newpassword = sanitize(req.body.newpassword);
+        req.body.oldpassword = sanitize(req.body.oldpassword);
+        
+        const userInfo = dbUsers.filter(x => x.email == req.body.email);
+        if(userInfo.length == 0)
+        {
+            res.status(400).send("There is no account with the requested email.")
+            return;
+        }
+        var salt = userInfo[0].salt;
+        console.log(bcrypt.hashSync(req.body.oldpassword, salt) == userInfo[0].hash)
+        if(bcrypt.hashSync(req.body.oldpassword, salt) == userInfo[0].hash)
+        {
+            salt = bcrypt.genSaltSync(10);
+            var hash = bcrypt.hashSync(req.body.newpassword, salt)
+            db.get('users')
+            .find({email:req.body.email})
+            .assign({hash:hash,
+                     salt:salt})
+            .write()
+            res.status(200).send("success")
+        }
+        else{
+            res.status(400).send("incorrect old password")
+            return;
+        }
+    
+})
+
 //verifies user and returns the payload
 app.get('/api/verify', verifyToken, (req, res)=>{
     jwt.verify(req.token, 'supersecretshhhhh',(err, authData) =>{
@@ -774,22 +822,22 @@ app.put('/api/updatepolicy',verifyToken, (req, res) =>{
         req.body.policy = sanitize(req.body.policy);
 
 
-        if(req.body.reason == "snp")
+        if(req.body.policy == "snp")
         {
             db.get('snp')
-            .assign({content : content})
+            .assign({content : req.body.content})
             .write()
         }
-        else if(req.body.reason =="aup")
+        else if(req.body.policy =="aup")
         {
             db.get('aup')
-            .assign({content : content})
+            .assign({content : req.body.content})
             .write()
         }
-        else if(req.body.reason == "dmca")
+        else if(req.body.policy == "dmca")
         {
             db.get('dmca')
-            .assign({content : content})
+            .assign({content : req.body.content})
             .write()
         }
         else
@@ -804,6 +852,91 @@ app.put('/api/updatepolicy',verifyToken, (req, res) =>{
 
 })
 
+//admin creates a new policy
+app.put('/api/createpolicy',verifyToken, (req, res) =>{
+    jwt.verify(req.token, 'supersecretshhhhh',(err, authData) =>{
+        if(err){
+            res.status(200).send("unauthorized access");
+            return
+        }
+        const email = authData.email;
+        const dateTime = new Date();
+
+        const schema = Joi.object({
+            content: Joi.string().required(),
+            policy: Joi.string().required()
+        })
+        if(schema.validate(req.body).error != undefined)
+        {
+            res.status(400).send(schema.validate(req.body).error.details[0].message)
+            return;
+        }
+        req.body.content = sanitize(req.body.content)
+        req.body.policy = sanitize(req.body.policy);
+
+
+        if(req.body.policy == "snp")
+        {
+            console.log("1")
+            db.get('snp')
+            .assign({content : req.body.content})
+            .write()
+        }
+        else if(req.body.policy =="aup")
+        {
+            console.log("2")
+            console.log("afdsd")
+            db.get('aup')
+            .assign({content : req.body.content})
+            .write()
+        }
+        else if(req.body.policy == "dmca")
+        {
+            console.log("3")
+            db.get('dmca')
+            .assign({content : req.body.content})
+            .write()
+        }
+        else
+        {
+            res.status(400).send("No purpose here...");
+        }
+        res.status(200).send("success")
+
+
+    
+})
+
+})
+
+app.post('/api/addTakedownReq',(req, res)=> {
+
+    const schema = Joi.object({
+        content: Joi.string().required(),
+        user: Joi.string().required(),
+        date: Joi.string().required(),
+        reason: Joi.string().required()
+    })
+    if(schema.validate(req.body).error != undefined)
+    {
+        res.status(400).send(schema.validate(req.body).error.details[0].message)
+        return;
+    }
+    req.body.content = sanitize(req.body.content);
+    req.body.user = sanitize(req.body.user);
+    req.body.date = sanitize(req.body.date);
+    req.body.reason = sanitize(req.body.reason);
+
+    db.get('takedownRequests')
+    .push({content:req.body.content,
+           user:req.body.user,
+           data:req.body.date,
+           reason:req.body.reason})
+    .write()
+
+    res.status(200).send("Request has been acknowledged");
+
+})
 
 
 function verifyToken(req, res, next){
@@ -813,7 +946,13 @@ function verifyToken(req, res, next){
         const bearer = bearerHeader.split(' ');
         const bearerToken = bearer[1];
         req.token = bearerToken;
-        next();
+        jwt.verify(req.token, 'supersecretshhhhh',(err, authData) =>{
+            if(dbUsers.filter(x=> x.email = authData.email).length ==0)
+            {
+                res.status(403).send("Please Log in before accessing this functionality")
+            }
+            next();
+        })
     }
     else{
         res.status("403").send("Please Log in before accessing this functionality");

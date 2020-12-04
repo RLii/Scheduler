@@ -13,12 +13,28 @@ export class DbService {
 
   constructor(private http: HttpClient, private ls: LocalStorageService) { }
 
+  updatePassword(email:string, newpass:string, oldpass:string){
+    return this.http.put('/api/users/updatePassword', {
+      email: email,
+      newpassword: newpass,
+      oldpassword:oldpass
+    },{responseType:'text'})
+  }
+
+  createNewPolicy(content: string, reason: string){
+    var temp = "bearer "+this.ls.getToken();
+    return this.http.put('/api/createpolicy',{
+      content: content,
+      policy: reason
+    },{headers: new HttpHeaders({"authorization" : temp}),responseType:'text'})
+
+  }
 
   setPolicyContent(content: string, reason: string){
     var temp = "bearer "+this.ls.getToken();
-    return this.http.put('/api/updatereview',{
+    return this.http.put('/api/updatepolicy',{
       content: content,
-      reason: reason
+      policy: reason
     },{headers: new HttpHeaders({"authorization" : temp}),responseType:'text'})
 
   }

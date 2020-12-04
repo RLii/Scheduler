@@ -18,6 +18,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatExpansionModule} from '@angular/material/expansion';
 import { AdminComponent } from './admin/admin.component';
 import { CopyrightComponent } from './copyright/copyright.component';
+import { PassResetComponent } from './pass-reset/pass-reset.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -30,7 +31,8 @@ import { CopyrightComponent } from './copyright/copyright.component';
     DemoSchedulesComponent,
     DemoCoursesComponent,
     AdminComponent,
-    CopyrightComponent
+    CopyrightComponent,
+    PassResetComponent
   ],
   imports: [ 
     BrowserModule,
