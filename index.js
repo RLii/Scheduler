@@ -728,6 +728,83 @@ app.put('/api/updatereview',verifyToken, (req, res) =>{
 
 })
 
+//get all policies
+app.get('/api/policies',verifyToken, (req, res)=> {
+    jwt.verify(req.token, 'supersecretshhhhh',(err, authData) =>{
+        if(err){
+            res.status(200).send("unauthorized access");
+            return
+        }
+        if(authData.admin == false){
+            res.status(200).send("unauthorized access");
+            return
+        }
+        
+        let tempJ = {
+            "snp": db.get('snp').value().content,
+            "aup": db.get('aup').value().content,
+            "dmca": db.get('dmca').value().content
+        }
+        
+    
+    res.status(200).send(tempJ);
+})
+})
+
+//admin changes a policy
+app.put('/api/updatepolicy',verifyToken, (req, res) =>{
+    jwt.verify(req.token, 'supersecretshhhhh',(err, authData) =>{
+        if(err){
+            res.status(200).send("unauthorized access");
+            return
+        }
+        const email = authData.email;
+        const dateTime = new Date();
+
+        const schema = Joi.object({
+            content: Joi.string().required(),
+            policy: Joi.string().required()
+        })
+        if(schema.validate(req.body).error != undefined)
+        {
+            res.status(400).send(schema.validate(req.body).error.details[0].message)
+            return;
+        }
+        req.body.content = sanitize(req.body.content)
+        req.body.policy = sanitize(req.body.policy);
+
+
+        if(req.body.reason == "snp")
+        {
+            db.get('snp')
+            .assign({content : content})
+            .write()
+        }
+        else if(req.body.reason =="aup")
+        {
+            db.get('aup')
+            .assign({content : content})
+            .write()
+        }
+        else if(req.body.reason == "dmca")
+        {
+            db.get('dmca')
+            .assign({content : content})
+            .write()
+        }
+        else
+        {
+            res.status(400).send("No purpose here...");
+        }
+        res.status(200).send("success")
+
+
+    
+})
+
+})
+
+
 
 function verifyToken(req, res, next){
     const bearerHeader = req.headers['authorization'];

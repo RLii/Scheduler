@@ -17,6 +17,7 @@ import { DemoSchedulesComponent } from './demo-schedules/demo-schedules.componen
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatExpansionModule} from '@angular/material/expansion';
 import { AdminComponent } from './admin/admin.component';
+import { CopyrightComponent } from './copyright/copyright.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -28,7 +29,8 @@ import { AdminComponent } from './admin/admin.component';
     RegisterComponent,
     DemoSchedulesComponent,
     DemoCoursesComponent,
-    AdminComponent
+    AdminComponent,
+    CopyrightComponent
   ],
   imports: [ 
     BrowserModule,

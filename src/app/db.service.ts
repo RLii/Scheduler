@@ -4,6 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, map, tap } from 'rxjs/operators';
 import { LocalStorageService } from './local-storage.service';
 import { EmailValidator } from '@angular/forms';
+import { resetFakeAsyncZone } from '@angular/core/testing';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,21 @@ import { EmailValidator } from '@angular/forms';
 export class DbService {
 
   constructor(private http: HttpClient, private ls: LocalStorageService) { }
+
+
+  setPolicyContent(content: string, reason: string){
+    var temp = "bearer "+this.ls.getToken();
+    return this.http.put('/api/updatereview',{
+      content: content,
+      reason: reason
+    },{headers: new HttpHeaders({"authorization" : temp}),responseType:'text'})
+
+  }
+
+  getPolicies(){
+    var temp = "bearer "+this.ls.getToken();
+    return this.http.get('/api/policies',{headers: new HttpHeaders({"authorization" : temp})})
+  }
 
   getAdminReviews(){
     var temp = "bearer "+this.ls.getToken();

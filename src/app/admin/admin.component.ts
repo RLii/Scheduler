@@ -11,12 +11,26 @@ export class AdminComponent implements OnInit {
 
   users:any;
   reviews:any;
+  policies:any;
+
+  snp:string;
+  aup:string;
+  dmca: string;
 
   constructor(private db : DbService, private ls:LocalStorageService) { }
 
   ngOnInit(): void {
     this.displayUsers()
     this.displayReviews()
+  }
+
+  displayPolicies(){
+    this.db.getPolicies().subscribe(data => {
+      this.policies = data
+      this.snp = this.policies.snp
+      this.aup = this.policies.aup
+      this.dmca = this.policies.dmca
+    })
   }
 
   displayReviews(){
