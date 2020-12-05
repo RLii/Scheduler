@@ -1062,6 +1062,8 @@ app.delete('/api/review',verifyToken,(req, res)=>{
         user: req.body.user,
         date : req.body.date})
     .write()
+
+    res.status(200).send("deleted")
 })
 
 

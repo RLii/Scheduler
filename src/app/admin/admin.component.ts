@@ -3,6 +3,7 @@ import { Local } from 'protractor/built/driverProviders';
 import { DbService } from '../db.service';
 import { LocalStorageService }from '../local-storage.service';
 import { CommonModule }from '@angular/common';
+import { ThrowStmt } from '@angular/compiler';
 @Component({
   selector: 'app-admin', 
   templateUrl: './admin.component.html',
@@ -45,10 +46,13 @@ export class AdminComponent implements OnInit {
     })
   }
 
+  sleep(ms){
+    return new Promise(resolve => setTimeout(resolve,ms))
+  }
   deleteReview(x){
     this.db.deleteReview(x.content, x.user, x.date).subscribe(data=> {
       alert(data)
-      this.deleteTakedown(x);
+      this.deleteTakedown(x)
     },error =>{
       alert(error.error)
     })
@@ -63,6 +67,10 @@ export class AdminComponent implements OnInit {
     else{
       this.takedownPage = false;
     }
+    this.displayUsers()
+    this.displayReviews()
+    this.displayPolicies()
+    this.displayTakedowns()
   }
 
   
