@@ -481,10 +481,6 @@ app.put('/api/schedules/edit', verifyToken, (req, res) => {
             req.body.components[x] = sanitize(req.body.components[x]);
         }
 
-        if(dbSchedule.filter(x=> x.schedule_name == req.body.new_name).length!=0)
-        {
-            res.status(400).send("There already exists a course of this name")
-        }
     
         const filteredDb = dbSchedule.filter(element => element.schedule_name == req.body.schedule_name)
         if(filteredDb[0].email != authData.email)
@@ -925,13 +921,149 @@ app.post('/api/addTakedownReq',(req, res)=> {
     db.get('takedownRequests')
     .push({content:req.body.content,
            user:req.body.user,
-           data:req.body.date,
-           reason:req.body.reason})
+           date:req.body.date,
+           reason:req.body.reason,
+           takedownDate: new Date()})
     .write()
 
     res.status(200).send("Request has been acknowledged");
 
 })
+
+//get all takedown requests
+app.get('/api/takedownReqs',verifyToken, (req, res)=> {
+    jwt.verify(req.token, 'supersecretshhhhh',(err, authData) =>{
+        if(err){
+            res.status(200).send("unauthorized access");
+            return
+        }
+        if(authData.admin == false){
+            res.status(200).send("unauthorized access");
+            return
+        }
+    
+    let resultJson = {};
+    let result = []
+    let filteredDb = db.get('takedownRequests').value()
+    for(let x = 0; x < filteredDb.length; x++){
+            const tempJ = {
+                "content": filteredDb[x].content,
+                "user":filteredDb[x].user,
+                "date": filteredDb[x].date,
+                "reason" : filteredDb[x].reason,
+                "takedownDate": filteredDb[x].date
+            }
+            result.push(tempJ)
+        
+    }
+    resultJson.result = result
+    res.status(200).send(resultJson);
+})
+})
+
+
+//admin sets review to hidden
+app.put('/api/setreviewfalse',verifyToken, (req, res) =>{
+    jwt.verify(req.token, 'supersecretshhhhh',(err, authData) =>{
+        if(err){
+            res.status(200).send("unauthorized access");
+            return
+        }
+
+        const email = authData.email;
+        const dateTime = new Date();
+
+        const schema = Joi.object({
+            content: Joi.string().required(),
+            user: Joi.string().required(),
+            date: Joi.string().required()
+        })
+        if(schema.validate(req.body).error != undefined)
+        {
+            res.status(400).send(schema.validate(req.body).error.details[0].message)
+            return;
+        }
+        req.body.content = sanitize(req.body.content);
+        req.body.user = sanitize(req.body.user);
+        req.body.date = sanitize(req.body.date)
+
+
+        if(authData.admin)
+        {
+            db.get('courses')
+            .find({review:[{content:req.body.content,
+                            user: req.body.user,
+                            date : req.body.date}]})
+            .get('review')
+            .find({date:req.body.date})
+            .assign({hidden:true})
+            .write()
+        }
+        else
+        {
+            res.status(400).send("unauthorized access")
+        }
+        
+        res.status(200).send("success")
+
+
+    
+})
+})
+
+app.delete('/api/takedownRequest',verifyToken, (req, res)=>{
+    const schema = Joi.object({
+        content: Joi.string().required(),
+        user: Joi.string().required(),
+        date: Joi.string().required(),
+        reason: Joi.string().required(),
+        takedownDate: Joi.string().required()
+    })
+    if(schema.validate(req.body).error != undefined)
+    {
+        res.status(400).send(schema.validate(req.body).error.details[0].message)
+        return;
+    }
+    req.body.content = sanitize(req.body.content);
+    req.body.user = sanitize(req.body.user);
+    req.body.date = sanitize(req.body.date)
+    req.body.reason = sanitize(req.body.reason)
+    req.body.takedownDate = sanitize(req.body.takedownDate)
+    console.log(db.get('takedownRequests').find({takedownDate:req.body.takedownDate}).value())
+
+    db.get('takedownRequests')
+    .remove({date:req.body.date})
+    .write()
+
+    res.status(200).send("deleted")
+
+})
+
+app.delete('/api/review',verifyToken,(req, res)=>{
+    const schema = Joi.object({
+        content: Joi.string().required(),
+        user: Joi.string().required(),
+        date: Joi.string().required()
+    })
+    if(schema.validate(req.body).error != undefined)
+    {
+        res.status(400).send(schema.validate(req.body).error.details[0].message)
+        return;
+    }
+    req.body.content = sanitize(req.body.content);
+    req.body.user = sanitize(req.body.user);
+    req.body.date = sanitize(req.body.date)
+    db.get('courses')
+    .find({review:[{content:req.body.content,
+        user: req.body.user,
+        date : req.body.date}]})
+    .get('review')
+    .remove({content:req.body.content,
+        user: req.body.user,
+        date : req.body.date})
+    .write()
+})
+
 
 
 function verifyToken(req, res, next){
@@ -941,6 +1073,7 @@ function verifyToken(req, res, next){
         const bearerToken = bearer[1];
         req.token = bearerToken;
         jwt.verify(req.token, 'supersecretshhhhh',(err, authData) =>{
+            console.log(dbUsers.filter(x=> x.email == authData.email))
             if(dbUsers.filter(x=> x.email == authData.email).length ==0)
             {
                 res.status(403).send("Please Log in before accessing this functionality")

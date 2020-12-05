@@ -1,3 +1,6 @@
+
+<button (click)="switchPage()">Switch pages</button>
+<div *ngIf="!takedownPage">
 <div *ngIf="users">
     <h3>Users</h3>
     <p class="users" *ngFor="let x of users">
@@ -55,4 +58,25 @@
     <textarea cols="150" rows="4"  [(ngModel)] = "newdmca"></textarea>
     <button (click)="createdmca()">Create New DMCA</button>
     </div>
+</div>
+</div>
+<div *ngIf="takedownPage">
+    <h3>The following shows the requests for DMCA removal. If the DMCA request is valid, the review can be deleted by pressing the delete button. If the removal is not valid, the remove from list button can remove the takedown request</h3>
+    <p class="users" *ngFor="let x of takedowns">
+        Reason: {{x.reason}}
+        <br>
+        Date of takedown submission {{x.takedownDate}}
+        <br>
+        Content: {{x.content}}
+        <br>
+        User: {{x.user}}
+        <br>
+        Date: {{x.date}}
+        <br>
+        <button (click)="setHidden(x)">Hide Review</button>
+        <br>
+        <button (click)="deleteTakedown(x)">Delete Takedown</button>
+        <br>
+        <button (click)="deleteReview(x)">Delete Review</button>
+    </p>
 </div>

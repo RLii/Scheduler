@@ -10,9 +10,14 @@ import { CommonModule }from '@angular/common';
 })
 export class AdminComponent implements OnInit {
 
+  takedownPage:boolean = false;
+
+
+
   users:any;
   reviews:any;
   policies:any;
+  takedowns:any;
 
   snp:string;
   aup:string;
@@ -28,6 +33,53 @@ export class AdminComponent implements OnInit {
     this.displayUsers()
     this.displayReviews()
     this.displayPolicies()
+    this.displayTakedowns()
+  }
+
+  deleteTakedown(x){
+    this.db.deleteTakedown(x.content, x.user, x.date, x.reason, x.takedownDate).subscribe(data => {
+      alert(data)
+      this.displayTakedowns();
+    },error=>{
+      alert(error.error)
+    })
+  }
+
+  deleteReview(x){
+    this.db.deleteReview(x.content, x.user, x.date).subscribe(data=> {
+      alert(data)
+      this.deleteTakedown(x);
+    },error =>{
+      alert(error.error)
+    })
+  }
+
+  switchPage(){
+    console.log("afsd")
+    if(!this.takedownPage)
+    {
+      this.takedownPage = true;
+    }
+    else{
+      this.takedownPage = false;
+    }
+  }
+
+  
+  setHidden(review: any){
+    this.db.setReviewToHidden(review.content, review.user, review.date).subscribe(data =>{
+      alert(data)
+      this.displayReviews();
+    },error =>{
+      alert(error.error)
+    })
+  }
+
+  displayTakedowns(){
+    this.db.getTakedownReqs().subscribe(data=>{
+      this.takedowns = data
+      this.takedowns = this.takedowns.result
+    })
   }
 
   savesnp(){

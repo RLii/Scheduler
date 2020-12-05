@@ -13,9 +13,49 @@ export class DbService {
 
   constructor(private http: HttpClient, private ls: LocalStorageService) { }
 
+  deleteTakedown(content:string, user:string, date:string, reason:string, takedownDate:string){
+    var temp = "bearer "+this.ls.getToken();
+  return this.http.request('delete','/api/takedownRequest',{headers: new HttpHeaders({"authorization" : temp}),responseType:'text',
+  body:{
+    content:content,
+    user:user,
+    date:date,
+    reason:reason,
+    takedownDate: takedownDate
+  }})
+  }
+  
+
+  deleteReview(content: string, user:string, date:string){
+  var temp = "bearer "+this.ls.getToken();
+  return this.http.request('delete','/api/review',{headers: new HttpHeaders({"authorization" : temp}),responseType:'text',
+  body:{
+    content:content,
+    user:user,
+    date:date
+  }})
+  }
+
+  setReviewToHidden(content: string, user: string, date:string){
+    var temp = "bearer "+this.ls.getToken();
+    return this.http.put('/api/setreviewfalse',{
+      content: content,
+      user: user,
+      date: date
+    },{headers: new HttpHeaders({"authorization" : temp}),responseType:'text'})
+  }
+
+  getTakedownReqs(){
+    var temp = "bearer "+this.ls.getToken();
+    return this.http.get('/api/takedownReqs',{headers: new HttpHeaders({"authorization" : temp})})
+  }
+
   takedownRequest(content:string, user:string, date: string, reason:string){
     return this.http.post('/api/addTakedownReq',{
-      
+      content:content,
+      user: user,
+      date: date,
+      reason: reason
     },{responseType:'text'})
   }
     
@@ -154,12 +194,13 @@ headers: new HttpHeaders({'Content-Type': 'application/json','authorization': te
     return this.http.get('/api/courses/course-codes/' + subject)
   }
   putCoursesIntoSchedule(schedule: string, subjects: any[], course_codes: any[], components: any[]){
+    var temp = "bearer "+this.ls.getToken();
     return this.http.put('/api/schedules/schedule-contents',{
       schedule_name:schedule,
       subjects:subjects,
       course_codes:course_codes,
       components:components
-    },{responseType:"text"})
+    },{headers: new HttpHeaders({'Content-Type': 'application/json','authorization': temp}),responseType:"text"})
   }
   getScheduleContentsByName(name: string){
     return this.http.get('/api/schedules/' + name)

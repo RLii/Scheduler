@@ -5,4 +5,15 @@
     <p>{{policies.aup}}</p>
     <h3>DMCA Notic and Takedown Procedure</h3>
     <p>{{policies.dmca}}</p>
+
+    <h3>Send DMCA complaints</h3>
+    <p>content:</p>
+    <input [(ngModel)] = "content">
+    <p>User:</p>
+    <input [(ngModel)] = "user">
+    <p>Date:</p>
+    <input [(ngModel)] = "date">
+    <p>reason:</p>
+    <input [(ngModel)] = "reason">
+    <button (click)="sendComplaint()">Send </button>
 </div>
